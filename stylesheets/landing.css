@@ -1,0 +1,164 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Use Montserrat for headings and buttons */
+h1, h2, h3, button {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    height: 100vh;
+    background-image: url("../src/doodle2.jpg");
+    background-size: cover; /* Ensures the image covers the whole page */
+    background-repeat: repeat;
+    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    background-position: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6); /* White overlay with 60% opacity */
+    z-index: -1;
+}
+
+.sidebar {
+    width: 15%;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.logo {
+    width: 80%; /* Adjust the size of the logo */
+    max-width: 120px; /* Prevent the logo from becoming too large */
+    margin-bottom: 20px; /* Add space below the logo */
+    border-radius: 20px;
+}
+.sidebar button {
+    background: #34495e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 80%; /* Ensures all buttons have the same width */
+    max-width: 150px; /* Prevents buttons from being too wide */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.sidebar button:hover {
+    background: #1abc9c;
+    transform: scale(1.10); 
+}
+.main-content {
+    width: 85%;
+    padding: 20px;
+    /* background: #ecf0f1; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Enable scrolling */
+    height: 100vh; /* Full height */
+    position: relative;
+}
+.search-bar {
+    font-family: 'Poppins', sans-serif;
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: sticky; /* Keep the search bar fixed */ 
+    top: 0px;  
+    z-index: 10; /* Ensure it's above other content */
+}
+.search-bar:focus{
+    outline: none;
+    border: 1px solid #34495e;
+}
+
+/* Thread List */
+.thread-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+}
+
+.thread {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.thread:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.thread-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.thread-content {
+    font-size: 14px;
+    color: #555;
+}
+
+.thread-image {
+    margin-top: 9px;
+    width: 100%; 
+    height: 400px; /* Limits height */
+    object-fit: scale-down; /* Ensures the image maintains aspect ratio */
+    border-radius: 20px; /* Rounded corners */
+    margin-bottom: 10px; /* Adds space below the image */
+    border: 1px solid #777;
+    padding: 15px;
+}
+
+.thread-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #777;
+}
+
+.thread-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.thread-actions span {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.thread-actions span:hover {
+    color: #1a1a1b;
+}

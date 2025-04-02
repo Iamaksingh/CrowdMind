@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summarize</title>
+    <link rel="stylesheet" href="stylesheets/summarize_page.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
+        <button onclick="window.location.href='landing.html'">🏠 Home</button>
+        <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
+        <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
+        <button onclick="window.location.href='profile.html'">👤 Profile</button>
+        <button onclick="window.location.href='login.html'">🔑 Logout</button>
+    </div>
+    <div class="main-content">
+        <input type="text" class="search-bar" placeholder="Search for a topic...">
+        <div class="summary" id="thread-list">
+            <div class="top-cards">
+                <div class="card">
+                    <h2>Gender Ratio</h2>
+                    <canvas id="genderChart"></canvas> <!-- Donut Chart -->
+                </div>
+                <div class="card">
+                    <h2>User Engagement Over Time</h2>
+                    <canvas id="engagementChart"></canvas> <!-- Line Chart -->
+                </div>
+            </div>
+            <div class="card full-width">
+                <h2>Summary</h2>
+                <p id="summaryText">This thread discusses the impact of AI on modern education, highlighting benefits and concerns.
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
+                    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make 
+                    a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing 
+                    Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions 
+                    of Lorem Ipsum."Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of 
+                    classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at 
+                    Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum
+                    passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem
+                    Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) 
+                    by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. 
+                    The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+                    The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 
+                    and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form.
+                </p>
+            </div>
+        </div>
+    </div>
+    <script src="logics/summarize_page.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
