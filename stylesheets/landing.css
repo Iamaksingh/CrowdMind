@@ -141,7 +141,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
-    font-size: 12px;
+    font-size: 17px;
     color: #777;
 }
 
