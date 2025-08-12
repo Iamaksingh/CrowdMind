@@ -1,3 +1,9 @@
+const token = localStorage.getItem("token");
+if(!token || token === "0") {
+    alert("Please log in first!");
+    window.location.href = "login.html";
+}
+
 // Wait until page loads before rendering charts
 document.addEventListener("DOMContentLoaded", function () {
     renderCharts();

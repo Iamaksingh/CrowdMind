@@ -1,3 +1,9 @@
+const token = localStorage.getItem("token");
+if(!token || token === "0") {
+    alert("Please log in first!");
+    window.location.href = "login.html";
+}
+
 // Fetch threads from your backend API instead of using dummy data
 async function fetchThreads() {
     try {

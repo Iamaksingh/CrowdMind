@@ -13,12 +13,12 @@
         <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
         <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
         <button onclick="window.location.href='profile.html'">👤 Profile</button>
-        <button onclick="localStorage.setItem('token', 0)">🔑 Logout</button>
+        <button onclick="logout()">🔑 Logout</button>
     </div>
     <div class="main-content">
         <div class="form-container">
             <h2>Create a New Thread</h2>
-            <form id="new-thread-form" class="new-thread-form" novalidate action="/upload" method="POST" enctype="multipart/form-data">
+            <form id="new-thread-form" class="new-thread-form" novalidate enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Thread Title</label>
                     <input type="text" id="title" name="title" placeholder="Enter thread title..." required>
@@ -33,7 +33,7 @@
                     <button type="button" id="ai-engagement-predict">📊 Check Bias</button>
                 </div>                
                 <div class="custom-file-upload">
-                    <button id="custom-upload-btn">📂 Choose File</button>
+                    <button id="custom-upload-btn" type="button">📂 Choose File</button>
                     <span id="file-name">No file chosen</span>
                     <input type="file" id="media-upload-input" accept="image/*, video/*" multiple hidden name="file">
                 </div>
@@ -47,5 +47,11 @@
         </div>
     </div>
     <script src="logics/new_thread.js"></script>
+    <script>
+        function logout() {
+            localStorage.setItem('token', "0");
+            window.location.href = "login.html"; // Redirect immediately
+        }
+    </script>
 </body>
 </html>
