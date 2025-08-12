@@ -14,7 +14,7 @@
         <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
         <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
         <button onclick="window.location.href='profile.html'">👤 Profile</button>
-        <button onclick="localStorage.setItem('token', 0)">🔑 Logout</button>
+        <button onclick="logout()">🔑 Logout</button>
     </div>
     <div class="main-content">
         <input type="text" class="search-bar" placeholder="Search for a topic...">
@@ -52,5 +52,11 @@
     </div>
     <script src="logics/summarize_page.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function logout() {
+            localStorage.setItem('token', "0");
+            window.location.href = "login.html"; // Redirect immediately
+        }
+    </script>
 </body>
 </html>
