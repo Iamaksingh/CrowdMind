@@ -1,6 +1,13 @@
 const API_BASE_URL = "http://localhost:5000/api/auth"; // Backend URL
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Prefill email if stored
+  const savedEmail = localStorage.getItem("email");
+  if (savedEmail && savedEmail !== "") {
+    document.getElementById("email").value = savedEmail;
+    document.getElementById("rememberMe").checked = true;
+  }
+
   // Typewriter effect
   const text = "CrowdMind!";
   let index = 0;
@@ -75,47 +82,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
+      // Save email if remember is checked
+      const rememberTick = document.getElementById("rememberMe").checked;
+      localStorage.setItem("email", rememberTick ? email : "");
+
+      // Save token
+      localStorage.setItem("token", data.token);
+
       // Redirect after successful login
       window.location.href = "landing.html";
     } catch (err) {
       restoreButton(loginBtn);
-      alert("Auto login failed: " + err.message);
+      alert("Login failed: " + err.message);
     }
   }
 
   // Handle Login form submit
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoaderInButton(loginBtn);
-
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
     if (!email || !password) {
-      restoreButton(loginBtn);
       alert("Please enter both email and password.");
       return;
     }
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if(res.ok){
-        window.location.href = "landing.html";
-        localStorage.setItem('token',data.token);
-      }else if(!res.ok){
-        throw new Error(data.message || "Login failed");
-      }
-    } catch (err) {
-      restoreButton(loginBtn);
-      alert(err.message);
-    }
+    await loginUser(email, password);
   });
 
   // Handle Signup button click
@@ -125,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
+    const rememberTick = document.getElementById("rememberMe").checked;
 
     if (!email || !password) {
       restoreButton(signupBtn);
@@ -142,6 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Signup failed");
+
+      // Save email if remember is checked
+      localStorage.setItem("email", rememberTick ? email : "");
 
       restoreButton(signupBtn);
       showPopup("Signup successful! Logging you in...");
