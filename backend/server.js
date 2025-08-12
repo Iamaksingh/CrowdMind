@@ -1,0 +1,32 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import threadRoutes from './routes/threadRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+
+dotenv.config();
+const app = express();
+app.use(cors({
+  origin: (origin, callback) => {
+    callback(null, origin || "*"); // Allow any origin dynamically
+  },
+  credentials: true // Allow cookies/sessions
+}));
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/threads', threadRoutes);
+
+const PORT = process.env.PORT || 5000;
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (err) {
+    console.error('Failed to start server', err);
+  }
+};
+
+start();
