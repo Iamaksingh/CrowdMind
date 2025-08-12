@@ -33,39 +33,6 @@ body::before {
     z-index: -1;
 }
 
-.sidebar {
-    width: 15%;
-    background: #2c3e50;
-    color: white;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-.logo {
-    width: 80%; /* Adjust the size of the logo */
-    max-width: 120px; /* Prevent the logo from becoming too large */
-    margin-bottom: 20px; /* Add space below the logo */
-    border-radius: 20px;
-}
-.sidebar button {
-    background: #34495e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    width: 80%; /* Ensures all buttons have the same width */
-    max-width: 150px; /* Prevents buttons from being too wide */
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-.sidebar button:hover {
-    background: #1abc9c;
-    transform: scale(1.10); 
-}
 .main-content {
     width: 85%;
     padding: 20px;
