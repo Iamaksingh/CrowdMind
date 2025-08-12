@@ -42,8 +42,12 @@
                     <label for="tags">Tags (comma-separated)</label>
                     <input type="text" name="tags" id="tags" placeholder="e.g., AI, Machine Learning, Ethics">
                 </div>
-                <button type="submit" class="submit-btn">Post Thread</button>
+                <button type="submit" class="submit-btn" id="submitButton">Post Thread</button>
             </form>
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Submitting...</p>
+            </div>
         </div>
     </div>
     <script src="logics/new_thread.js"></script>

@@ -1,42 +1,37 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("new-thread-form"); // Reference the form
+// 🚨 Redirect if not logged in
+const token = localStorage.getItem("token");
+if (!token || token === "0") {
+    alert("Please log in first!");
+    window.location.href = "login.html";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("new-thread-form");
     const fileInput = document.getElementById("media-upload-input");
-
-    form.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent default submission behavior
-        console.log("Thread posted!"); // Replace this with actual post logic
-    });
-
-    fileInput.addEventListener("change", function (event) {
-        event.stopPropagation(); // Stop event from bubbling up
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const fileInput = document.getElementById("media-upload-input"); // Hidden input
-    const customButton = document.getElementById("custom-upload-btn"); // Custom button
-    const fileNameDisplay = document.getElementById("file-name"); // Text next to button
+    const customButton = document.getElementById("custom-upload-btn");
+    const fileNameDisplay = document.getElementById("file-name");
     const previewContainer = document.getElementById("preview-container");
 
-    let selectedFiles = []; // Store files manually
+    let selectedFiles = [];
 
-    // Open file dialog when clicking custom button
-    customButton.addEventListener("click", function () {
+    // 📂 Open file dialog
+    customButton.addEventListener("click", (e) => {
+        e.preventDefault();
         fileInput.click();
     });
 
-    fileInput.addEventListener("change", function () {
-        previewContainer.innerHTML = ""; // Clear previous previews
-        selectedFiles = Array.from(fileInput.files); // Store selected files
-
-        if (selectedFiles.length > 0) {
-            fileNameDisplay.textContent = selectedFiles.length + " file(s) selected";
-        } else {
-            fileNameDisplay.textContent = "No file chosen";
-        }
-
+    // 📷 File selection preview
+    fileInput.addEventListener("change", () => {
+        selectedFiles = Array.from(fileInput.files);
+        updateFileName();
         updatePreviews();
     });
+
+    function updateFileName() {
+        fileNameDisplay.textContent = selectedFiles.length
+            ? `${selectedFiles.length} file(s) selected`
+            : "No file chosen";
+    }
 
     function updatePreviews() {
         previewContainer.innerHTML = "";
@@ -52,14 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 previewElement.innerHTML = `<video controls><source src="${fileURL}" type="${file.type}"></video>`;
             }
 
-            // Remove Button
             const removeButton = document.createElement("button");
             removeButton.textContent = "✖";
             removeButton.classList.add("remove-btn");
-            removeButton.addEventListener("click", function () {
-                selectedFiles.splice(index, 1); // Remove from array
-                updateFileInput(); // Update file input
-                updatePreviews(); // Refresh preview
+            removeButton.addEventListener("click", () => {
+                selectedFiles.splice(index, 1);
+                updateFileInput();
+                updatePreviews();
             });
 
             previewElement.appendChild(removeButton);
@@ -70,16 +64,73 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateFileInput() {
         const dataTransfer = new DataTransfer();
         selectedFiles.forEach(file => dataTransfer.items.add(file));
-        fileInput.files = dataTransfer.files; // Update input element
-
-        if (selectedFiles.length > 0) {
-            fileNameDisplay.textContent = selectedFiles.length + " file(s) selected";
-        } else {
-            fileNameDisplay.textContent = "No file chosen";
-        }
+        fileInput.files = dataTransfer.files;
+        updateFileName();
     }
-});
 
-document.getElementById("media-upload-input").addEventListener("change", function (event) {
-    event.preventDefault(); // Prevent form reset
+    // 🚀 Submit form
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById("title").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const tags = document.getElementById("tags").value
+            .split(",")
+            .map(tag => tag.trim())
+            .filter(tag => tag);
+
+        if (!title || !description) {
+            alert("Title and description are required!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("tags", JSON.stringify(tags));
+
+        selectedFiles.forEach(file => {
+            formData.append("file", file);
+        });
+
+        //add loading
+        loading.classList.remove("hidden");
+        //remove thread button
+        let submitButton = document.getElementById("submitButton");
+        submitButton.classList.add("hidden");
+
+        try {
+            const response = await fetch("http://localhost:5000/api/threads", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                console.error("Error posting thread:", result);
+                alert(`Failed to post: ${result.message || "Unknown error"}`);
+                return;
+            }
+
+            console.log("✅ Thread posted:", result);
+            alert("Thread posted successfully!");
+
+            form.reset();
+            selectedFiles = [];
+            updateFileName();
+            previewContainer.innerHTML = "";
+
+        } catch (error) {
+            console.error("Network error:", error);
+            alert("Network error. Please try again.");
+        } finally {
+            // Hide loading spinner
+            loading.classList.add("hidden");
+            // show submit button
+            submitButton.classList.remove("hidden");
+        }
+    });
 });
