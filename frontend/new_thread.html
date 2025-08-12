@@ -13,7 +13,7 @@
         <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
         <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
         <button onclick="window.location.href='profile.html'">👤 Profile</button>
-        <button onclick="window.location.href='login.html'">🔑 Logout</button>
+        <button onclick="localStorage.setItem('token', 0)">🔑 Logout</button>
     </div>
     <div class="main-content">
         <div class="form-container">
@@ -21,11 +21,11 @@
             <form id="new-thread-form" class="new-thread-form" novalidate action="/upload" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Thread Title</label>
-                    <input type="text" id="title" placeholder="Enter thread title..." required>
+                    <input type="text" id="title" name="title" placeholder="Enter thread title..." required>
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea class="thread-description" rows="5" placeholder="Describe your thread..." required></textarea>
+                    <textarea class="thread-description" rows="5" id="description" placeholder="Describe your thread..." required></textarea>
                 </div>
                 <div class="ai-features">
                     <button type="button" id="ai-content-suggest">✨ Suggest Content</button>
@@ -35,12 +35,12 @@
                 <div class="custom-file-upload">
                     <button id="custom-upload-btn">📂 Choose File</button>
                     <span id="file-name">No file chosen</span>
-                    <input type="file" id="media-upload-input" accept="image/*, video/*" multiple hidden>
+                    <input type="file" id="media-upload-input" accept="image/*, video/*" multiple hidden name="file">
                 </div>
                 <div id="preview-container"></div>
                 <div class="form-group">
                     <label for="tags">Tags (comma-separated)</label>
-                    <input type="text" id="tags" placeholder="e.g., AI, Machine Learning, Ethics">
+                    <input type="text" name="tags" id="tags" placeholder="e.g., AI, Machine Learning, Ethics">
                 </div>
                 <button type="submit" class="submit-btn">Post Thread</button>
             </form>
