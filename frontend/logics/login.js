@@ -106,9 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
-
-      window.location.href = "landing.html";
+      if(res.ok){
+        window.location.href = "landing.html";
+        localStorage.setItem('token',data.token);
+      }else if(!res.ok){
+        throw new Error(data.message || "Login failed");
+      }
     } catch (err) {
       restoreButton(loginBtn);
       alert(err.message);
