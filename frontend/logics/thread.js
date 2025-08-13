@@ -4,7 +4,7 @@ const threadId = params.get("id");
 const token = localStorage.getItem("token");
 
 if (!token || token === "0") {
-    alert("Please log in first!");
+    showToast("Please log in first!");
     window.location.href = "login.html";
 }
 
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => {
             console.error(err);
-            alert("Error loading thread details");
+            showToast("Error loading thread details");
         });
     }
 
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Post a new comment
     window.addComment = function() {
         const text = commentInput.value.trim();
-        if (!text) return alert("Please write a comment!");
+        if (!text) return showToast("Please write a comment!");
 
         fetch(`http://localhost:5000/api/threads/${threadId}/comments`, {
             method: "POST",
@@ -104,10 +104,24 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => {
             console.error(err);
-            alert("Error posting comment");
+            showToast("Error posting comment");
         });
     };
 
     // Initial load
     loadThread();
 });
+
+
+function showToast(message, duration = 3000) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, duration);
+}

@@ -27,48 +27,14 @@
             <p><strong>Tags:</strong> <span id="tags">General</span></p>
         </div>
         <div class="comments" id="comments-container">
-            <div class="comment">
-                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-author">User1</div>
-                    <div class="comment-text">This is a sample comment.</div>
-                </div>
-            </div>
-            <div class="comment">
-                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-author">User1</div>
-                    <div class="comment-text">This is a sample comment.</div>
-                </div>
-            </div>
-            <div class="comment">
-                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-author">User1</div>
-                    <div class="comment-text">This is a sample comment.</div>
-                </div>
-            </div>
-            <div class="comment">
-                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-author">User1</div>
-                    <div class="comment-text">This is a sample comment.</div>
-                </div>
-            </div>
-            <div class="comment">
-                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-author">User1</div>
-                    <div class="comment-text">This is a sample comment.</div>
-                </div>
-            </div>
         </div>
         <div class="add-comment">
             <textarea id="comment-input" placeholder="Write your comment..."></textarea>
             <button onclick="addComment()">Post Comment</button>
         </div>
+        <!-- Toast container (already in HTML) -->
+        <div id="toastContainer"></div>
     </div>
-    <div id="toast-container"></div>
     <script>
         function logout() {
             localStorage.setItem('token', "0");
@@ -76,6 +42,7 @@
         }
     </script>
     <script src="./logics/thread.js"></script>
+    
 </body>
 
 </html>

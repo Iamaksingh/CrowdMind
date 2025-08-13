@@ -1,7 +1,7 @@
 // 🚨 Redirect if not logged in
 const token = localStorage.getItem("token");
 if (!token || token === "0") {
-    alert("Please log in first!");
+    showToast("Please log in first!");
     window.location.href = "login.html";
 }
 
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tags = document.getElementById("tags").value.trim();
 
         if (!title || !description) {
-            alert("Title and description are required!");
+            showToast("Title and description are required!");
             return;
         }
 
@@ -108,12 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
             if (!response.ok) {
                 console.error("Error posting thread:", result);
-                alert(`Failed to post: ${result.message || "Unknown error"}`);
+                showToast(`Failed to post: ${result.message || "Unknown error"}`);
                 return;
             }
 
             console.log("✅ Thread posted:", result);
-            alert("Thread posted successfully!");
+            showToast("Thread posted successfully!");
 
             form.reset();
             selectedFiles = [];
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
             console.error("Network error:", error);
-            alert("Network error. Please try again.");
+            showToast("Network error. Please try again.");
         } finally {
             // Hide loading spinner
             loading.classList.add("hidden");
@@ -131,3 +131,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+function showToast(message, duration = 3000) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, duration);
+}
