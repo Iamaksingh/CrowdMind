@@ -32,9 +32,11 @@ function createThreadElement(thread) {
     threadDiv.classList.add("thread");
 
     threadDiv.innerHTML = `
-        <div class="thread-title">${thread.title}</div>
-        <div class="thread-content">${thread.description || ""}</div>
-        ${thread.filePath ? `<img src="${thread.filePath}" class="thread-image" alt="Thread Image">` : ""}
+        <a href="thread.html?id=${thread._id}" class="thread-link"> <!-- ✅ Make thread clickable -->
+            <div class="thread-title">${thread.title}</div>
+            <div class="thread-content">${thread.description || ""}</div>
+            ${thread.filePath ? `<img src="${thread.filePath}" class="thread-image" alt="Thread Image">` : ""}
+        </a>
         <div class="thread-meta">
             <div class="thread-actions">
                 <span class="like-btn">❤️ ${thread.likes ?? 0}</span>
@@ -43,8 +45,9 @@ function createThreadElement(thread) {
         </div>
     `;
 
-    // Like button click event
-    threadDiv.querySelector(".like-btn").addEventListener("click", function () {
+    // ✅ Like button click event (stay on same page)
+    threadDiv.querySelector(".like-btn").addEventListener("click", function (e) {
+        e.preventDefault(); // Stop link from triggering on like click
         thread.likes = (thread.likes ?? 0) + 1;
         this.innerHTML = `❤️ ${thread.likes}`;
     });

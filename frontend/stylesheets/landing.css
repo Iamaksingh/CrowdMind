@@ -129,3 +129,15 @@ body::before {
 .thread-actions span:hover {
     color: #1a1a1b;
 }
+
+.thread-link {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Use the normal text color */
+    display: block; /* Make the whole area clickable */
+}
+
+.thread-link:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Optional hover effect */
+    transition: background-color 0.2s;
+    border-radius: 20px;
+}
