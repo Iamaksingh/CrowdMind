@@ -26,6 +26,7 @@ router.post('/', protect, upload.single("file"), async (req, res) => {
       title,
       description,
       tags: tags ? tags.split(",") : [],
+      author: req.user.id,
       filePath: req.file ? req.file.path : null // Cloudinary URL
     });
     await newThread.save();
