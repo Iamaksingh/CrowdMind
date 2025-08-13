@@ -3,45 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrowdMind - Landing Page</title>
-    <link rel="stylesheet" href="stylesheets/profile.css">
+    <title>CrowdMind - Profile</title>
     <link rel="stylesheet" href="stylesheets/navbar.css">
+    <link rel="stylesheet" href="stylesheets/profile.css">
 </head>
 <body>
 
-  <div class="sidebar">
-    <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
-    <button onclick="window.location.href='landing.html'">🏠 Home</button>
-    <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
-    <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
-    <button onclick="window.location.href='profile.html'">👤 Profile</button>
-    <button onclick="logout()">🔑 Logout</button>
-  </div>
+    <div class="sidebar">
+        <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
+        <button onclick="window.location.href='landing.html'">𖠿 Home</button>
+        <button onclick="window.location.href='new_thread.html'">🤔 New Thread</button>
+        <button onclick="window.location.href='profile.html'">👨🏻‍💼 Profile</button>
+        <button onclick="logout()">🔑Logout</button>
+    </div>
 
-  <div class="main-content">
-    <form id="profile-form" class="profile-form" enctype="multipart/form-data">
-      
-      <div class="avatar-preview">
-        <img id="avatarPreview" src="src/default-avatar.png" alt="Avatar" style="cursor:pointer; border-radius:50%; width:120px; height:120px; object-fit:cover;" />
-      </div>
-      <input type="file" id="avatar" name="avatar" accept="image/*" style="display:none;">
+    <div class="main-content">
+        <div class="form-container">
+            <form id="profile-form" class="profile-form" enctype="multipart/form-data">
+                <div class="avatar-preview">
+                    <img id="avatarPreview" src="src/default-avatar.png" alt="Avatar" />
+                </div>
+                <input type="file" id="avatar" name="avatar" accept="image/*" style="display:none;">
 
-      <input type="text" name="username" placeholder="Username" required>
-      <textarea name="bio" placeholder="Bio"></textarea>
-      <input type="text" name="location" placeholder="Location">
-      <input type="text" name="website" placeholder="Website">
-      <input type="text" name="twitter" placeholder="Twitter URL">
-      <input type="text" name="linkedin" placeholder="LinkedIn URL">
-      <input type="text" name="github" placeholder="Github URL">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Username" required>
 
-      <button type="submit">Save Profile</button>
-    </form>
-  </div>
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" placeholder="Bio"></textarea>
+
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" placeholder="Location">
+
+                <label for="website">Website</label>
+                <input type="text" id="website" name="website" placeholder="Website">
+
+                <label for="twitter">Twitter URL</label>
+                <input type="text" id="twitter" name="twitter" placeholder="Twitter URL">
+
+                <label for="linkedin">LinkedIn URL</label>
+                <input type="text" id="linkedin" name="linkedin" placeholder="LinkedIn URL">
+
+                <label for="github">Github URL</label>
+                <input type="text" id="github" name="github" placeholder="Github URL">
+
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
     <script src="logics/profile.js"></script>
     <script>
         function logout() {
             localStorage.setItem('token', "0");
-            window.location.href = "login.html"; // Redirect immediately
+            window.location.href = "login.html";
         }
     </script>
 </body>
