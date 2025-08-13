@@ -14,7 +14,6 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
-// Create or update profile
 export const upsertProfile = async (req, res) => {
   try {
     const { username, bio, location, website, twitter, linkedin, github } = req.body;
@@ -30,7 +29,7 @@ export const upsertProfile = async (req, res) => {
     let profile = await Profile.findOne({ user: req.user.id });
 
     if (profile) {
-      // Update existing
+      // Update existing profile
       profile.username = username || profile.username;
       profile.bio = bio || profile.bio;
       profile.location = location || profile.location;
@@ -38,6 +37,11 @@ export const upsertProfile = async (req, res) => {
       profile.socialLinks.twitter = twitter || profile.socialLinks.twitter;
       profile.socialLinks.linkedin = linkedin || profile.socialLinks.linkedin;
       profile.socialLinks.github = github || profile.socialLinks.github;
+
+      // Update avatar if uploaded
+      if (req.file) {
+        profile.avatar = `${req.file.path}`; // Multer stores file and adds it to req.file
+      }
 
       await profile.save();
       return res.json({ message: 'Profile updated', profile });
@@ -50,7 +54,8 @@ export const upsertProfile = async (req, res) => {
       bio,
       location,
       website,
-      socialLinks: { twitter, linkedin, github }
+      socialLinks: { twitter, linkedin, github },
+      avatar: req.file ? `/uploads/${req.file.filename}` : '' // optional avatar
     });
 
     await profile.save();

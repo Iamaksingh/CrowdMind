@@ -34,6 +34,7 @@ const profileSchema = new mongoose.Schema({
     linkedin: { type: String, default: '' },
     github: { type: String, default: '' },
   },
+  avatar: { type: String, default: '' } 
 }, { timestamps: true });
 
 const Profile = mongoose.model('Profile', profileSchema);
