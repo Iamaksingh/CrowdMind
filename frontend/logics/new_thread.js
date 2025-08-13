@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const title = document.getElementById("title").value.trim();
         const description = document.getElementById("description").value.trim();
-        const tags = document.getElementById("tags").value
+        const category = document.getElementById("tags").value
             .split(",")
             .map(tag => tag.trim())
             .filter(tag => tag);
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("description", description);
-        formData.append("tags", JSON.stringify(tags));
+        formData.append("category", category);
 
         selectedFiles.forEach(file => {
             formData.append("file", file);

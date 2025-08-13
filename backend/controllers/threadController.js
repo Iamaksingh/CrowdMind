@@ -39,13 +39,23 @@ export const getThreads = async (req, res) => {
 
 export const getThreadById = async (req, res) => {
   try {
-    const thread = await Thread.findById(req.params.id).populate('author', 'email');
-    if (!thread) return res.status(404).json({ message: 'Thread not found' });
-    const profile = await Profile.findOne({ user: thread.author._id }).select('username avatar');
+    const thread = await Thread.findById(req.params.id)
+      .populate('author', 'email')
+      .lean(); // return plain JS object so we can easily add props
+
+    if (!thread) {
+      return res.status(404).json({ message: 'Thread not found' });
+    }
+
+    const profile = await Profile.findOne({ user: thread.author._id })
+      .select('username avatar')
+      .lean();
+
     const threadData = {
-      ...thread.toObject(),
+      ...thread,
       username: profile?.username || null,
-      avatar: profile?.avatar || null
+      avatar: profile?.avatar || null,
+      category: thread.category || thread.tag || null // make sure category is present
     };
 
     res.json(threadData);

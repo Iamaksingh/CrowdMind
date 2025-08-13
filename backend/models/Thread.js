@@ -25,7 +25,7 @@ const threadSchema = new mongoose.Schema({
   },
   likes: { type: Number, default: 0 },
   comments: { type: Number, default: 0 },
-  comment_list: [commentSchema]
+  comment_list: [commentSchema],
 }, { timestamps: true });
 
 // 1️⃣ For .save()

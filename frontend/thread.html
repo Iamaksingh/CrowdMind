@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
     <link rel="stylesheet" href="stylesheets/thread.css">
 </head>
+
 <body>
 
     <div class="sidebar">
@@ -20,37 +22,52 @@
 
     <div class="main-content">
         <div class="thread-details">
-            <h2>Thread Title</h2>
+            <h2 id="thread-title">Thread Title</h2>
             <p id="thread-description">This is the thread description...</p>
-            <p><strong>Category:</strong> <span id="thread-category">General</span></p>
+            <p><strong>Category:</strong> <span id="tags">General</span></p>
         </div>
         <div class="comments" id="comments-container">
             <div class="comment">
-                <div class="comment-author">User1</div>
-                <div class="comment-text">This is a sample comment.</div>
+                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">User1</div>
+                    <div class="comment-text">This is a sample comment.</div>
+                </div>
             </div>
-             <div class="comment">
-                <div class="comment-author">User1</div>
-                <div class="comment-text">This is a sample comment.</div>
+            <div class="comment">
+                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">User1</div>
+                    <div class="comment-text">This is a sample comment.</div>
+                </div>
             </div>
-             <div class="comment">
-                <div class="comment-author">User1</div>
-                <div class="comment-text">This is a sample comment.</div>
+            <div class="comment">
+                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">User1</div>
+                    <div class="comment-text">This is a sample comment.</div>
+                </div>
             </div>
-             <div class="comment">
-                <div class="comment-author">User1</div>
-                <div class="comment-text">This is a sample comment.</div>
+            <div class="comment">
+                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">User1</div>
+                    <div class="comment-text">This is a sample comment.</div>
+                </div>
             </div>
-             <div class="comment">
-                <div class="comment-author">User1</div>
-                <div class="comment-text">This is a sample comment.</div>
+            <div class="comment">
+                <img src="avatar1.jpg" alt="User1 Avatar" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">User1</div>
+                    <div class="comment-text">This is a sample comment.</div>
+                </div>
             </div>
         </div>
         <div class="add-comment">
             <textarea id="comment-input" placeholder="Write your comment..."></textarea>
             <button onclick="addComment()">Post Comment</button>
         </div>
-    </div> 
+    </div>
     <div id="toast-container"></div>
     <script>
         function logout() {
@@ -60,4 +77,5 @@
     </script>
     <script src="./logics/thread.js"></script>
 </body>
+
 </html>
