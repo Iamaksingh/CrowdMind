@@ -1,5 +1,6 @@
 import Thread from '../models/Thread.js';
 import { cloudinary } from '../config/cloudinary.js';
+import Profile from '../models/userProfile.js';
 
 export const createThread = async (req, res) => {
   try {
@@ -38,9 +39,16 @@ export const getThreads = async (req, res) => {
 
 export const getThreadById = async (req, res) => {
   try {
-    const thread = await Thread.findById(req.params.id).populate('author', 'username email');
+    const thread = await Thread.findById(req.params.id).populate('author', 'email');
     if (!thread) return res.status(404).json({ message: 'Thread not found' });
-    res.json(thread);
+    const profile = await Profile.findOne({ user: thread.author._id }).select('username avatar');
+    const threadData = {
+      ...thread.toObject(),
+      username: profile?.username || null,
+      avatar: profile?.avatar || null
+    };
+
+    res.json(threadData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
