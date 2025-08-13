@@ -1,9 +1,8 @@
 import express from 'express';
 import Thread from '../models/Thread.js';
-import { getThreads, getThreadById, deleteThread } from '../controllers/threadController.js';
+import { getThreads, getThreadById, deleteThread, addComment  } from '../controllers/threadController.js';
 import { upload } from '../config/cloudinary.js';
 import { protect } from '../middleware/authMiddleware.js';
-
 const router = express.Router();
 
 //get all the threads
@@ -39,8 +38,9 @@ router.post('/', protect, upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Failed to create thread" });
   }
 });
-
+router.post("/:id/comments", protect, addComment);
 router.get('/:id', getThreadById);
 router.delete('/:id', protect, deleteThread);
+
 
 export default router;

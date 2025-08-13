@@ -7,6 +7,8 @@ const commentSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
+  username: { type: String, required: true }, // from profile
+  avatar: { type: String },
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
