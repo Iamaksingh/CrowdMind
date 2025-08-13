@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return res.json();
         })
         .then(() => {
+            showToast("added comment");
             commentInput.value = "";
             // Refetch updated thread so comments list refreshes
             loadThread();
