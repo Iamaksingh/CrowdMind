@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api/auth"; // Backend URL
+const API_BASE_URL = "http://localhost:5000/api/auth";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Prefill email if stored
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "landing.html";
     } catch (err) {
       restoreButton(loginBtn);
-      alert("Login failed: " + err.message);
+      showToast("Login Failed "+ err.message);
     }
   }
 
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("password").value.trim();
 
     if (!email || !password) {
-      alert("Please enter both email and password.");
+      showToast("Please enter both email and password.");
       return;
     }
 
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!email || !password) {
       restoreButton(signupBtn);
-      alert("Please enter both email and password.");
+      showToast("Please enter both email and password.");
       return;
     }
 
@@ -147,7 +147,19 @@ document.addEventListener("DOMContentLoaded", () => {
       await loginUser(email, password);
     } catch (err) {
       restoreButton(signupBtn);
-      alert(err.message);
+      showToast(err.message);
     }
   });
 });
+
+
+function showToast(message, color = "#e74c3c") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.backgroundColor = color; // Red for error, green for success
+    toast.className = "toast show";
+    
+    setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+    }, 3000);
+}

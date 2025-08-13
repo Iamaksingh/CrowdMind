@@ -41,7 +41,7 @@ body {
 }
 
 .mainheading {
-    margin-top: -75px;
+    margin-top: 0px;
 }
 
 #typewriter {
@@ -163,50 +163,39 @@ h2 {
     color: #fff;
 }
 
-/* ==================== RESPONSIVE ==================== */
-
-/* Tablets */
-@media screen and (max-width: 768px) {
-    .main_container {
-        gap: 50px;
-    }
-
-    .logo_container img {
-        height: 300px;
-        width: auto;
-    }
-
-    #typewriter {
-        font-size: 36px;
-    }
-
-    .login-container {
-        max-width: 90%;
-    }
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #e74c3c; /* Default red for errors */
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 12px;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
 }
 
-/* Phones */
-@media screen and (max-width: 480px) {
-    body {
-        flex-direction: column;
-        padding: 20px;
-    }
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}
 
-    .main_container {
-        flex-direction: column;
-        gap: 20px;
-    }
-
+@media screen and (max-width: 768px) {
     .logo_container img {
-        height: 200px;
-        width: auto;
+        display: none !important;
     }
-
-    #typewriter {
-        font-size: 28px;
+    .main_container{
+        overflow-y: scroll;
+        scrollbar-width: none;
     }
-
-    .login-container {
-        max-width: 100%;
+    .main_container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
     }
 }
