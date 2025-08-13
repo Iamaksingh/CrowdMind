@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thread - CrowdMind</title>
+    <link rel="stylesheet" href="./stylesheets/thread.css">
+    <link rel="stylesheet" href="./stylesheets/navbar.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
+        <button onclick="window.location.href='landing.html'">🏠 Home</button>
+        <button onclick="window.location.href='new_thread.html'">✍️ New Thread</button>
+        <button onclick="window.location.href='summarize_page.html'">📂 Summarize</button>
+        <button onclick="window.location.href='profile.html'">👤 Profile</button>
+        <button onclick="logout()">🔑 Logout</button>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Thread details -->
+        <div class="thread-details">
+            <h2>Thread Title</h2>
+            <p id="thread-description">This is the thread description...</p>
+            <p><strong>Category:</strong> <span id="thread-category">General</span></p>
+        </div>
+
+        <!-- Comments section -->
+        <div class="comments" id="comments-container">
+            <!-- Comments will be injected here via JS -->
+            <div class="comment">
+                <div class="comment-author">User1</div>
+                <div class="comment-text">This is a sample comment.</div>
+            </div>
+             <div class="comment">
+                <div class="comment-author">User1</div>
+                <div class="comment-text">This is a sample comment.</div>
+            </div>
+             <div class="comment">
+                <div class="comment-author">User1</div>
+                <div class="comment-text">This is a sample comment.</div>
+            </div>
+             <div class="comment">
+                <div class="comment-author">User1</div>
+                <div class="comment-text">This is a sample comment.</div>
+            </div>
+             <div class="comment">
+                <div class="comment-author">User1</div>
+                <div class="comment-text">This is a sample comment.</div>
+            </div>
+        </div>
+
+        <!-- Add comment form -->
+        <div class="add-comment">
+            <textarea id="comment-input" placeholder="Write your comment..."></textarea>
+            <button onclick="addComment()">Post Comment</button>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.setItem('token', "0");
+            window.location.href = "login.html"; // Redirect immediately
+        }
+    </script>
+</body>
+</html>

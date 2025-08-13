@@ -1,0 +1,97 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* prevent body scroll */
+}
+
+body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background-image: url("../src/doodle2.jpg");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            height: 100%;         /* take full height */
+            overflow-y: auto; 
+        }
+
+        /* Thread details */
+        .thread-details {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .thread-details h2 {
+            margin-top: 0;
+        }
+
+        /* Comments section */
+        .comments {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            min-height: auto;
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comment {
+            background: #ecf0f1;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Add comment form */
+        .add-comment {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .add-comment textarea {
+            resize: vertical;
+            min-height: 60px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .add-comment button {
+            align-self: flex-end;
+            background: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .add-comment button:hover {
+            transform: scale(1.05);
+            background: #16a085;
+        }
