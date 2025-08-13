@@ -52,18 +52,21 @@ export const deleteThread = async (req, res) => {
     const thread = await Thread.findById(req.params.id);
     if (!thread) return res.status(404).json({ message: 'Thread not found' });
 
-    // only author can delete (basic check)
-    if (thread.author?.toString() !== req.user?.id) return res.status(403).json({ message: 'Forbidden' });
+    if (thread.author?.toString() !== req.user?.id)
+      return res.status(403).json({ message: 'Forbidden' });
 
     // delete image from cloudinary if present
     if (thread.imagePublicId) {
       await cloudinary.uploader.destroy(thread.imagePublicId);
     }
 
-    await thread.remove();
+    // delete thread
+    await Thread.findByIdAndDelete(req.params.id);
+
     res.json({ message: 'Thread deleted' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
