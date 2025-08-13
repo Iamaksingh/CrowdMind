@@ -19,6 +19,10 @@
 
     <div class="main-content">
         <div class="form-container">
+            <div id="profile-loading" class="hidden">
+                <div class="spinner"></div>
+                <p>Updating profile...</p>
+            </div>
             <form id="profile-form" class="profile-form" enctype="multipart/form-data">
                 <div class="avatar-preview">
                     <img id="avatarPreview" src="src/default-avatar.png" alt="Avatar" />
@@ -50,6 +54,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Toast container (already in HTML) -->
+    <div id="toast-container"></div>
 
     <script src="logics/profile.js"></script>
     <script>

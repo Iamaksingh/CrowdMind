@@ -1,45 +1,78 @@
 const BACKEND_URL = 'http://localhost:5000'; 
 const token = localStorage.getItem("token");
+
 if(!token || token === "0") {
-    alert("Please log in first!");
+    showToast("Please log in first!");
     window.location.href = "login.html";
 }
 
-// profile.js
-
+// Profile form elements
 const form = document.getElementById('profile-form');
 const avatarInput = document.getElementById('avatar');
 const avatarPreview = document.getElementById('avatarPreview');
+
+// Loader & toast container
+const loader = document.getElementById('profile-loading');
+const toastContainer = document.getElementById('toast-container');
+
+// ----------------------------
+// Toast function
+// ----------------------------
+function showToast(message, duration = 3000) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, duration);
+}
 
 // ----------------------------
 // 1. Fetch current profile
 // ----------------------------
 async function loadProfile() {
-  try {
-    const res = await fetch('http://localhost:5000/api/profile/me', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    loader.classList.remove("hidden"); // show loader
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/profile/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-    if (!res.ok) throw new Error('Failed to fetch profile');
+        if (!res.ok) {
+            // Try to parse JSON, otherwise just use default message
+            let errMsg = "Please create a profile first!";
+            try {
+                const errData = await res.json();
+                if (errData.message) errMsg = errData.message;
+            } catch {}
+            showToast(errMsg);
+            return;
+        }
 
-    const profile = await res.json();
+        let profile = {};
+        try {
+            profile = await res.json();
+        } catch {}
 
-    form.username.value = profile.username || '';
-    form.bio.value = profile.bio || '';
-    form.location.value = profile.location || '';
-    form.website.value = profile.website || '';
-    form.twitter.value = profile.socialLinks?.twitter || '';
-    form.linkedin.value = profile.socialLinks?.linkedin || '';
-    form.github.value = profile.socialLinks?.github || '';
+        form.username.value = profile.username || '';
+        form.bio.value = profile.bio || '';
+        form.location.value = profile.location || '';
+        form.website.value = profile.website || '';
+        form.twitter.value = profile.socialLinks?.twitter || '';
+        form.linkedin.value = profile.socialLinks?.linkedin || '';
+        form.github.value = profile.socialLinks?.github || '';
 
-    if (profile.avatar) {
-      avatarPreview.src = profile.avatar;
+        if (profile.avatar) avatarPreview.src = profile.avatar;
+
+    } catch (err) {
+        console.error(err);
+        showToast("Could not load profile. Please try again!");
+    } finally {
+        loader.classList.add("hidden"); // always hide loader
     }
-
-  } catch (err) {
-    console.error(err);
-    alert('Could not load profile. Please try again.');
-  }
 }
 
 // ----------------------------
@@ -48,43 +81,44 @@ async function loadProfile() {
 avatarPreview.addEventListener('click', () => avatarInput.click());
 
 avatarInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => avatarPreview.src = reader.result;
-    reader.readAsDataURL(file);
-  }
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => avatarPreview.src = reader.result;
+        reader.readAsDataURL(file);
+    }
 });
 
 // ----------------------------
 // 3. Handle form submission
 // ----------------------------
 form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData(form);
+    const formData = new FormData(form);
+    loader.classList.remove("hidden"); // show loader
 
-  try {
-    const res = await fetch('http://localhost:5000/api/profile', {
-      method: 'POST',
-      body: formData,
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/profile`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-    const data = await res.json();
+        let data = {};
+        try { data = await res.json(); } catch {}
 
-    if (!res.ok) throw new Error(data.message || 'Failed to update profile');
+        if (!res.ok) throw new Error(data.message || 'Failed to update profile');
 
-    alert(data.message);
+        showToast(data.message || "Profile updated successfully!");
+        if (data.profile?.avatar) avatarPreview.src = data.profile.avatar;
 
-    if (data.profile.avatar) {
-      avatarPreview.src = data.profile.avatar;
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || "Failed to update profile");
+    } finally {
+        loader.classList.add("hidden"); // always hide loader
     }
-
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
 });
 
 // ----------------------------
