@@ -19,6 +19,14 @@ export const upsertProfile = async (req, res) => {
   try {
     const { username, bio, location, website, twitter, linkedin, github } = req.body;
 
+    // Check if the username is taken by another user
+    if (username) {
+      const existingUser = await Profile.findOne({ username, user: { $ne: req.user.id } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+    }
+
     let profile = await Profile.findOne({ user: req.user.id });
 
     if (profile) {
@@ -50,6 +58,12 @@ export const upsertProfile = async (req, res) => {
 
   } catch (err) {
     console.error(err);
+
+    // Catch duplicate key error from MongoDB (unique index)
+    if (err.code === 11000 && err.keyPattern?.username) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     res.status(500).json({ message: 'Server error' });
   }
 };
