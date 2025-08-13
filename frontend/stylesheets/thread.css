@@ -1,16 +1,24 @@
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+    font-family: Arial, sans-serif;
+}
+
+/* Use Montserrat for headings and buttons */
+h1, h2, h3, button {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
 }
 
 body {
+    font-family: 'Roboto', sans-serif;
     display: flex;
     height: 100vh;
     background-image: url("../src/doodle2.jpg");
     background-size: cover; /* Ensures the image covers the whole page */
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-attachment: fixed; /* Keeps the background fixed while scrolling */
     background-position: center;
 }
@@ -27,32 +35,23 @@ body::before {
 }
 
 .main-content {
-    flex: 1;
-    padding: 40px;
-    background-image: url("../src/doodle2.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    height: 100%;
-    overflow-y: auto;
     width: 100%;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
+    overflow-y: auto; /* Enable scrolling */
+    height: 100vh; /* Full height */
+    position: relative;
+    gap: 20px;
 }
 
-/* Thread details */
 .thread-details {
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    flex: 0 0 auto;
+    width: 100%;
 }
 
 .thread-details h2 {
@@ -64,12 +63,12 @@ body::before {
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 10px;
-    min-height: auto;
-    max-height: 300px;
+    height: 300px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
 }
 
 .comment {
@@ -91,6 +90,7 @@ body::before {
     background: rgba(255, 255, 255, 0.9);
     padding: 15px;
     border-radius: 10px;
+    width: 100%;
 }
 
 .add-comment textarea {
@@ -101,7 +101,6 @@ body::before {
     border-radius: 5px;
     border: 1px solid #ccc;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .add-comment button {
@@ -118,4 +117,47 @@ body::before {
 .add-comment button:hover {
     transform: scale(1.05);
     background: #16a085;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+        gap: 20px;
+        align-items: stretch; /* full width content */
+    }
+
+    .thread-details,
+    .comments,
+    .add-comment {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 10px;
+        gap: 15px;
+        margin-top: 60px;
+    }
+
+    .thread-details,
+    .comments,
+    .add-comment {
+        padding: 15px;
+    }
+
+    .add-comment textarea {
+        height: 80px;
+    }
+
+    .add-comment button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    body {
+        display: flex; /* reset to normal flow on mobile */
+        flex-direction: column !important;
+    }
+
 }

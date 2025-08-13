@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Thread - CrowdMind</title>
-    <link rel="stylesheet" href="./stylesheets/thread.css">
-    <link rel="stylesheet" href="./stylesheets/navbar.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdMind - Profile</title>
+    <link rel="stylesheet" href="stylesheets/navbar.css">
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
+    <link rel="stylesheet" href="stylesheets/thread.css">
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
         <button onclick="window.location.href='landing.html'">𖠿 Home</button>
@@ -18,18 +18,13 @@
         <button onclick="logout()">🔑Logout</button>
     </div>
 
-    <!-- Main content -->
     <div class="main-content">
-        <!-- Thread details -->
         <div class="thread-details">
             <h2>Thread Title</h2>
             <p id="thread-description">This is the thread description...</p>
             <p><strong>Category:</strong> <span id="thread-category">General</span></p>
         </div>
-
-        <!-- Comments section -->
         <div class="comments" id="comments-container">
-            <!-- Comments will be injected here via JS -->
             <div class="comment">
                 <div class="comment-author">User1</div>
                 <div class="comment-text">This is a sample comment.</div>
@@ -51,19 +46,18 @@
                 <div class="comment-text">This is a sample comment.</div>
             </div>
         </div>
-
-        <!-- Add comment form -->
         <div class="add-comment">
             <textarea id="comment-input" placeholder="Write your comment..."></textarea>
             <button onclick="addComment()">Post Comment</button>
         </div>
-    </div>
-
+    </div> 
+    <div id="toast-container"></div>
     <script>
         function logout() {
             localStorage.setItem('token', "0");
-            window.location.href = "login.html"; // Redirect immediately
+            window.location.href = "login.html";
         }
     </script>
+    <script src="./logics/thread.js"></script>
 </body>
 </html>
