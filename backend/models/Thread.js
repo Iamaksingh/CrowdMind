@@ -16,7 +16,7 @@ const commentSchema = new mongoose.Schema({
 const threadSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
-  category: { type: String },
+  tags: { type: [String]},
   filePath: { type: String },
   author: {
     type: mongoose.Schema.Types.ObjectId,

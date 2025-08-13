@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Populate thread details
             threadTitle.textContent = data.title;
             threadDescription.textContent = data.description;
-            tags.textContent = data.category || "General";
+            tags.textContent = data.tags || "General";
 
             // If filePath exists, display it
             if (data.filePath) {

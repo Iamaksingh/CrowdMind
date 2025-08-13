@@ -4,8 +4,8 @@ import Profile from '../models/userProfile.js';
 
 export const createThread = async (req, res) => {
   try {
-    const { title, description, category } = req.body;
-    const author = req.user?.id || null;
+    const { title, description, tags } = req.body;
+    const author = req.user?.id;
 
     let imageUrl = null;
     let imagePublicId = null;
@@ -17,7 +17,7 @@ export const createThread = async (req, res) => {
     }
 
     const thread = await Thread.create({
-      title, description, category, imageUrl, imagePublicId, author
+      title, description, tags, imageUrl, imagePublicId, author
     });
 
     res.status(201).json(thread);

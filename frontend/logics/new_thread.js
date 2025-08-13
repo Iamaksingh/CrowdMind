@@ -74,10 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const title = document.getElementById("title").value.trim();
         const description = document.getElementById("description").value.trim();
-        const category = document.getElementById("tags").value
-            .split(",")
-            .map(tag => tag.trim())
-            .filter(tag => tag);
+        const tags = document.getElementById("tags").value.trim();
 
         if (!title || !description) {
             alert("Title and description are required!");
@@ -87,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData();
         formData.append("title", title);
         formData.append("description", description);
-        formData.append("category", category);
+        formData.append("tags", tags);
 
         selectedFiles.forEach(file => {
             formData.append("file", file);
