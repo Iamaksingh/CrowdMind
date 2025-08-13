@@ -31,6 +31,7 @@ body {
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 0 0 auto;
         }
 
         .thread-details h2 {
@@ -72,12 +73,14 @@ body {
         }
 
         .add-comment textarea {
-            resize: vertical;
-            min-height: 60px;
+            resize: none;
+            overflow-y: auto;
+            height: 100px; 
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
             width: 100%;
+            box-sizing: border-box; 
         }
 
         .add-comment button {
