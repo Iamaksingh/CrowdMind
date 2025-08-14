@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to fetch and display thread
     function loadThread() {
-        fetch(`http://localhost:5000/api/threads/${threadId}`, {
+        fetch(`https://crowdmind-backend.onrender.com/api/threads/${threadId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const text = commentInput.value.trim();
         if (!text) return showToast("Please write a comment!");
 
-        fetch(`http://localhost:5000/api/threads/${threadId}/comments`, {
+        fetch(`https://crowdmind-backend.onrender.com/api/threads/${threadId}/comments`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

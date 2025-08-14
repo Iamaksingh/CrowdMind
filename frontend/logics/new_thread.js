@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton.classList.add("hidden");
 
         try {
-            const response = await fetch("http://localhost:5000/api/threads", {
+            const response = await fetch("https://crowdmind-backend.onrender.com/api/threads", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`

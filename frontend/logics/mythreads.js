@@ -7,7 +7,7 @@ if (!token || token === "0") {
 // Fetch threads from backend
 async function fetchThreads() {
     try {
-        const res = await fetch("http://localhost:5000/api/threads/mythreads", {
+        const res = await fetch("https://crowdmind-backend.onrender.com/api/threads/mythreads", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -57,7 +57,7 @@ function createThreadElement(thread, likedByUser = false) {
     likeBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`http://localhost:5000/api/threads/${thread._id}/like`, {
+            const res = await fetch(`https://crowdmind-backend.onrender.com/api/threads/${thread._id}/like`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -128,7 +128,7 @@ function createThreadElement(thread, likedByUser = false) {
 async function deleteThread(id, element) {
     showToast("Deleting thread...", "info");
     try {
-        const res = await fetch(`http://localhost:5000/api/threads/${id}`, {
+        const res = await fetch(`https://crowdmind-backend.onrender.com/api/threads/${id}`, {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${token}` }
         });
