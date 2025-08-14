@@ -15,9 +15,7 @@ async function fetchThreads() {
             }
         });
 
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         const threadData = await res.json();
         loadThreads(threadData);
@@ -27,7 +25,7 @@ async function fetchThreads() {
     }
 }
 
-function createThreadElement(thread) {
+function createThreadElement(thread, likedByUser = false) {
     const threadDiv = document.createElement("div");
     threadDiv.classList.add("thread");
     threadDiv.setAttribute("data-id", thread._id);
@@ -40,7 +38,7 @@ function createThreadElement(thread) {
         </a>
         <div class="thread-meta">
             <div class="thread-actions">
-                <span class="like-btn">❤️ ${thread.likes ?? 0}</span>
+                <span class="like-btn">${likedByUser ? '❤️' : '🤍'} ${thread.likes ?? 0}</span>
                 <span class="comment-btn">💬 ${thread.comments ?? 0}</span>
             </div>
         </div>
@@ -55,34 +53,30 @@ function createThreadElement(thread) {
     `;
 
     // Like button logic
-    threadDiv.querySelector(".like-btn").addEventListener("click", function (e) {
+    const likeBtn = threadDiv.querySelector(".like-btn");
+    likeBtn.addEventListener("click", async (e) => {
         e.preventDefault();
-        thread.likes = (thread.likes ?? 0) + 1;
-        this.innerHTML = `❤️ ${thread.likes}`;
+        try {
+            const res = await fetch(`http://localhost:5000/api/threads/${thread._id}/like`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await res.json();
+            likeBtn.innerHTML = `${data.liked ? '❤️' : '🤍'} ${data.likes}`;
+        } catch (err) {
+            console.error("Error liking thread:", err);
+        }
     });
 
-    // Slider logic
+    // Delete slider logic
     const handle = threadDiv.querySelector(".delete-slider-handle");
     const track = threadDiv.querySelector(".delete-slider-track");
     let isDragging = false;
-    let startX, handleWidth, trackWidth, currentX;
-
-    const confirmZoneFactor = 0.9; // 90% of the track for color change
-
-    handle.addEventListener("mousedown", startDrag);
-    handle.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // stops text selection
-        startX = e.clientX;
-        isDragging = true;
-    });
-    handle.addEventListener("touchstart", startDrag);
-    handle.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        startX = e.touches[0].clientX;
-        isDragging = true;
-    });
+    let startX = 0, handleWidth = 0, trackWidth = 0, currentX = 0;
+    const confirmZoneFactor = 0.9;
 
     function startDrag(e) {
+        e.preventDefault();
         isDragging = true;
         startX = e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
         handleWidth = handle.offsetWidth;
@@ -101,7 +95,7 @@ function createThreadElement(thread) {
         currentX = delta;
         handle.style.transform = `translateX(${delta}px)`;
 
-        // Change track color when in confirm zone
+        // Confirm zone color
         if (delta >= (trackWidth - handleWidth) * confirmZoneFactor) {
             track.classList.add("confirm");
         } else {
@@ -117,15 +111,16 @@ function createThreadElement(thread) {
         document.removeEventListener("mouseup", stopDrag);
         document.removeEventListener("touchend", stopDrag);
 
-        // If reached end → delete
         if (currentX >= trackWidth - handleWidth) {
             deleteThread(thread._id, threadDiv);
         } else {
-            // Snap back
             handle.style.transform = "translateX(0)";
             track.classList.remove("confirm");
         }
     }
+
+    handle.addEventListener("mousedown", startDrag);
+    handle.addEventListener("touchstart", startDrag);
 
     return threadDiv;
 }
@@ -147,9 +142,14 @@ async function deleteThread(id, element) {
 
 function loadThreads(threadData) {
     const threadList = document.getElementById("thread-list");
-    threadList.innerHTML = ""; // Clear previous
+    threadList.innerHTML = "";
+
+    // Mark liked threads
+    const likedThreadIds = threadData.filter(t => t.likedByCurrentUser).map(t => t._id);
+
     threadData.forEach(thread => {
-        threadList.appendChild(createThreadElement(thread));
+        const liked = likedThreadIds.includes(thread._id);
+        threadList.appendChild(createThreadElement(thread, liked));
     });
 }
 

@@ -6,15 +6,7 @@ import { protect } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 //get all the threads
-router.get('/', async (req, res) => {
-  try {
-    const threads = await Thread.find().sort({ createdAt: -1 }); // latest first
-    res.status(200).json(threads);
-  } catch (error) {
-    console.error("Error fetching threads:", error);
-    res.status(500).json({ error: "Failed to fetch threads" });
-  }
-});
+router.get('/',protect,getThreads);
 
 // Create new thread + upload file
 router.post('/', protect, upload.single("file"), async (req, res) => {

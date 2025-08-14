@@ -6,37 +6,51 @@ import Profile from '../models/userProfile.js';
 export const createThread = async (req, res) => {
   try {
     const { title, description, tags } = req.body;
-    const author = req.user?.id;
 
-    let imageUrl = null;
-    let imagePublicId = null;
-
-    if (req.file) {
-      // multer-storage-cloudinary-v2 places info on req.file
-      imageUrl = req.file.path;
-      imagePublicId = req.file.filename || req.file.public_id || null;
-    }
-
-    const thread = await Thread.create({
-      title, description, tags, imageUrl, imagePublicId, author
+    const newThread = new Thread({
+      title,
+      description,
+      tags: tags ? tags.split(",") : [],
+      author: req.user.id,
+      filePath: req.file ? req.file.path : null // Cloudinary URL
     });
-
-    res.status(201).json(thread);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error', details: err.message });
+    await newThread.save();
+    res.status(201).json({
+      message: "Thread created successfully",
+      thread: newThread
+    });
+  } catch (error) {
+    console.error("Error saving thread:", error);
+    res.status(500).json({ error: "Failed to create thread" });
   }
-};
+}
 
 export const getThreads = async (req, res) => {
   try {
-    const threads = await Thread.find().populate('author', 'username email').sort({ createdAt: -1 });
-    res.json(threads);
+    let user = null;
+
+    // If there is a token, get user info
+    if (req.user && req.user.id) {
+      user = await User.findById(req.user.id);
+    }
+
+    const threads = await Thread.find()
+      .populate('author', 'username email')
+      .sort({ createdAt: -1 });
+
+    // Map likedByCurrentUser
+    const threadsWithLikeInfo = threads.map(thread => ({
+      ...thread.toObject(),
+      likedByCurrentUser: user ? user.likedThreads.includes(thread._id) : false
+    }));
+
+    res.json(threadsWithLikeInfo);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 export const getThreadById = async (req, res) => {
   try {
@@ -66,17 +80,29 @@ export const getThreadById = async (req, res) => {
   }
 };
 
-export const getThreadByUser = async (req,res) => {
+export const getThreadByUser = async (req, res) => {
   try {
+    // Get the current logged-in user
+    const user = await User.findById(req.user.id);
+
+    // Fetch threads created by this user
     const threads = await Thread.find({ author: req.user.id })
       .populate("author", "username email")
       .sort({ createdAt: -1 });
-      res.json(threads);
+
+    // Add likedByCurrentUser field for frontend
+    const threadsWithLikeInfo = threads.map(thread => ({
+      ...thread.toObject(),
+      likedByCurrentUser: user.likedThreads.includes(thread._id)
+    }));
+
+    res.json(threadsWithLikeInfo);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-} 
+};
+
 
 export const deleteThread = async (req, res) => {
   try {

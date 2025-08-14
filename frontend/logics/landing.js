@@ -4,22 +4,20 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
-// Fetch threads from your backend API instead of using dummy data
+// Fetch threads from backend
 async function fetchThreads() {
     try {
-        // Replace URL with your actual backend endpoint
         const res = await fetch("http://localhost:5000/api/threads", {
             method: "GET",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             }
         });
 
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-        const threadData = await res.json(); // Assuming backend sends an array of threads
+        const threadData = await res.json(); // Assuming each thread has likedByCurrentUser property
         loadThreads(threadData);
 
     } catch (error) {
@@ -27,51 +25,65 @@ async function fetchThreads() {
     }
 }
 
+// Create individual thread element
 function createThreadElement(thread) {
     const threadDiv = document.createElement("div");
     threadDiv.classList.add("thread");
 
+    // Initialize heart icon based on liked status
+    let liked = thread.likedByCurrentUser ?? false;
+    const updateHeart = () => threadDiv.querySelector(".like-btn").innerHTML = `${liked ? '❤️' : '🤍'} ${thread.likes ?? 0}`;
+
     threadDiv.innerHTML = `
-        <a href="thread.html?id=${thread._id}" class="thread-link"> <!-- ✅ Make thread clickable -->
+        <a href="thread.html?id=${thread._id}" class="thread-link">
             <div class="thread-title">${thread.title}</div>
             <div class="thread-content">${thread.description || ""}</div>
             ${thread.filePath ? `<img src="${thread.filePath}" class="thread-image" alt="Thread Image">` : ""}
         </a>
         <div class="thread-meta">
             <div class="thread-actions">
-                <span class="like-btn">❤️ ${thread.likes ?? 0}</span>
+                <span class="like-btn">${liked ? '❤️' : '🤍'} ${thread.likes ?? 0}</span>
                 <span class="comment-btn">💬 ${thread.comments ?? 0}</span>
             </div>
         </div>
     `;
 
-    // ✅ Like button click event (stay on same page)
-    threadDiv.querySelector(".like-btn").addEventListener("click", function (e) {
-        e.preventDefault(); // Stop link from triggering on like click
-        thread.likes = (thread.likes ?? 0) + 1;
-        this.innerHTML = `❤️ ${thread.likes}`;
+    const likeBtn = threadDiv.querySelector(".like-btn");
+
+    likeBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`http://localhost:5000/api/threads/${thread._id}/like`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await res.json();
+            likeBtn.innerHTML = `${data.liked ? '❤️' : '🤍'} ${data.likes}`;
+        } catch (err) {
+            console.error("Error liking thread:", err);
+        }
     });
 
     return threadDiv;
 }
 
-// Function to load threads into the thread list
+// Load threads into container
 function loadThreads(threadData) {
     const threadList = document.getElementById("thread-list");
+    threadList.innerHTML = ""; // Clear previous
     threadData.forEach(thread => {
         threadList.appendChild(createThreadElement(thread));
     });
 }
 
-// Optional: Infinite Scroll (works if backend supports pagination)
+// Optional: Infinite scroll
 function checkScroll() {
     const threadList = document.getElementById("thread-list");
     if (threadList.scrollTop + threadList.clientHeight >= threadList.scrollHeight) {
-        fetchThreads(); // Fetch more threads when bottom reached
+        fetchThreads();
     }
 }
 
-// Attach scroll event listener
 document.getElementById("thread-list").addEventListener("scroll", checkScroll);
 
 // Initial load
