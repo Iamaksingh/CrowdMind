@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
+  likedThreads: [{ type: mongoose.Schema.Types.ObjectId, ref: "Thread" }]
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
