@@ -65,6 +65,18 @@ export const getThreadById = async (req, res) => {
   }
 };
 
+export const getThreadByUser = async (req,res) => {
+  try {
+    const threads = await Thread.find({ author: req.user.id })
+      .populate("author", "username email")
+      .sort({ createdAt: -1 });
+      res.json(threads);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+} 
+
 export const deleteThread = async (req, res) => {
   try {
     const thread = await Thread.findById(req.params.id);
