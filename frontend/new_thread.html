@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,13 @@
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
     <link rel="stylesheet" href="stylesheets/new_thread.css">
 </head>
+
 <body>
     <div class="sidebar">
         <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
         <button onclick="window.location.href='landing.html'">𖠿 Home</button>
         <button onclick="window.location.href='new_thread.html'">🤔 New Thread</button>
+        <button onclick="window.location.href='mythreads.html'">My Thread</button>
         <button onclick="window.location.href='profile.html'">👨🏻‍💼 Profile</button>
         <button onclick="logout()">🔑Logout</button>
     </div>
@@ -26,13 +29,14 @@
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea class="thread-description" rows="5" id="description" placeholder="Describe your thread..." required></textarea>
+                    <textarea class="thread-description" rows="5" id="description" placeholder="Describe your thread..."
+                        required></textarea>
                 </div>
                 <div class="ai-features">
                     <button type="button" id="ai-content-suggest">✨ Suggest Content</button>
                     <button type="button" id="ai-moderate">🔍 Moderate Content</button>
                     <button type="button" id="ai-engagement-predict">📊 Check Bias</button>
-                </div>                
+                </div>
                 <div class="custom-file-upload">
                     <button id="custom-upload-btn" type="button">📂 Choose File</button>
                     <span id="file-name">No file chosen</span>
@@ -61,4 +65,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -9,12 +9,17 @@
     justify-content: center;
     gap: 15px;
 }
+
 .logo {
-    width: 80%; /* Adjust the size of the logo */
-    max-width: 120px; /* Prevent the logo from becoming too large */
-    margin-bottom: 20px; /* Add space below the logo */
+    width: 80%;
+    /* Adjust the size of the logo */
+    max-width: 120px;
+    /* Prevent the logo from becoming too large */
+    margin-bottom: 20px;
+    /* Add space below the logo */
     border-radius: 20px;
 }
+
 .sidebar button {
     background: #34495e;
     color: white;
@@ -23,11 +28,14 @@
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
-    width: 80%; /* Ensures all buttons have the same width */
-    max-width: 150px; /* Prevents buttons from being too wide */
+    width: 80%;
+    /* Ensures all buttons have the same width */
+    max-width: 150px;
+    /* Prevents buttons from being too wide */
     transition: transform 0.3s, box-shadow 0.3s;
 }
+
 .sidebar button:hover {
     background: #1abc9c;
-    transform: scale(1.10); 
+    transform: scale(1.10);
 }

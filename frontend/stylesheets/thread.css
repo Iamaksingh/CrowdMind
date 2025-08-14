@@ -7,7 +7,10 @@
 }
 
 /* Use Montserrat for headings and buttons */
-h1, h2, h3, button {
+h1,
+h2,
+h3,
+button {
     font-family: 'Montserrat', sans-serif;
     font-weight: bold;
 }
@@ -17,9 +20,11 @@ body {
     display: flex;
     height: 100vh;
     background-image: url("../src/doodle2.jpg");
-    background-size: cover; /* Ensures the image covers the whole page */
+    background-size: cover;
+    /* Ensures the image covers the whole page */
     background-repeat: repeat;
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    background-attachment: fixed;
+    /* Keeps the background fixed while scrolling */
     background-position: center;
 }
 
@@ -30,7 +35,8 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.6); /* White overlay with 60% opacity */
+    background: rgba(255, 255, 255, 0.6);
+    /* White overlay with 60% opacity */
     z-index: -1;
 }
 
@@ -40,8 +46,10 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: auto; /* Enable scrolling */
-    height: 100vh; /* Full height */
+    overflow-y: auto;
+    /* Enable scrolling */
+    height: 100vh;
+    /* Full height */
     position: relative;
     gap: 20px;
 }
@@ -83,7 +91,8 @@ body::before {
 .comment-avatar {
     width: 32px;
     height: 32px;
-    border-radius: 50%; /* makes it circular */
+    border-radius: 50%;
+    /* makes it circular */
     margin-right: 8px;
     object-fit: cover;
 }
@@ -145,7 +154,8 @@ body::before {
 .thread-photo {
     max-width: 200px;
     height: auto;
-    border-radius: 8px; /* rounded corners optional */
+    border-radius: 8px;
+    /* rounded corners optional */
     display: block;
     margin-top: 10px;
 }
@@ -165,7 +175,7 @@ body::before {
     color: white;
     padding: 10px 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transform: translateX(100%);
     transition: all 0.5s ease;
@@ -180,7 +190,8 @@ body::before {
     .main-content {
         padding: 15px;
         gap: 20px;
-        align-items: stretch; /* full width content */
+        align-items: stretch;
+        /* full width content */
     }
 
     .thread-details,
@@ -211,9 +222,10 @@ body::before {
         padding: 8px 15px;
         font-size: 14px;
     }
-    
+
     body {
-        display: flex; /* reset to normal flow on mobile */
+        display: flex;
+        /* reset to normal flow on mobile */
         flex-direction: column !important;
     }
 

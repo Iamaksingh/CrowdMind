@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "landing.html";
     } catch (err) {
       restoreButton(loginBtn);
-      showToast("Login Failed "+ err.message);
+      showToast("Login Failed " + err.message);
     }
   }
 
@@ -154,12 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function showToast(message, color = "#e74c3c") {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.style.backgroundColor = color; // Red for error, green for success
-    toast.className = "toast show";
-    
-    setTimeout(() => {
-        toast.className = toast.className.replace("show", "");
-    }, 3000);
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.backgroundColor = color; // Red for error, green for success
+  toast.className = "toast show";
+
+  setTimeout(() => {
+    toast.className = toast.className.replace("show", "");
+  }, 3000);
 }

@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrowdMind - Home</title>
-    <link rel="stylesheet" href="stylesheets/landing.css">
+    <title>CrowdMind - My Threads</title>
+    <link rel="stylesheet" href="stylesheets/mythreads.css">
     <link rel="stylesheet" href="stylesheets/navbar.css">
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
 </head>
@@ -22,8 +22,9 @@
     <div class="main-content">
         <input type="text" class="search-bar" placeholder="Search for a topic...">
         <div class="thread-list" id="thread-list"></div>
+        <div id="toastContainer"></div>
     </div>
-    <script src="logics/landing.js"></script>
+    <script src="logics/mythreads.js"></script>
     <script>
         function logout() {
             localStorage.setItem('token', "0");

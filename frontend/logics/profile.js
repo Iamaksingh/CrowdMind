@@ -1,7 +1,7 @@
-const BACKEND_URL = 'http://localhost:5000'; 
+const BACKEND_URL = 'http://localhost:5000';
 const token = localStorage.getItem("token");
 
-if(!token || token === "0") {
+if (!token || token === "0") {
     showToast("Please log in first!");
     window.location.href = "login.html";
 }
@@ -23,7 +23,7 @@ function showToast(message, duration = 3000) {
     toast.className = "toast";
     toast.innerText = message;
     toastContainer.appendChild(toast);
-    
+
     setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
         toast.classList.remove("show");
@@ -47,7 +47,7 @@ async function loadProfile() {
             try {
                 const errData = await res.json();
                 if (errData.message) errMsg = errData.message;
-            } catch {}
+            } catch { }
             showToast(errMsg);
             return;
         }
@@ -55,7 +55,7 @@ async function loadProfile() {
         let profile = {};
         try {
             profile = await res.json();
-        } catch {}
+        } catch { }
 
         form.username.value = profile.username || '';
         form.bio.value = profile.bio || '';
@@ -106,7 +106,7 @@ form.addEventListener('submit', async (e) => {
         });
 
         let data = {};
-        try { data = await res.json(); } catch {}
+        try { data = await res.json(); } catch { }
 
         if (!res.ok) throw new Error(data.message || 'Failed to update profile');
 

@@ -10,9 +10,11 @@ body {
     display: flex;
     height: 100vh;
     background-image: url("../src/doodle2.jpg");
-    background-size: cover; /* Ensures the image covers the whole page */
+    background-size: cover;
+    /* Ensures the image covers the whole page */
     background-repeat: no-repeat;
-    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+    background-attachment: fixed;
+    /* Keeps the background fixed while scrolling */
     background-position: center;
 }
 
@@ -23,7 +25,8 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.6); /* White overlay with 60% opacity */
+    background: rgba(255, 255, 255, 0.6);
+    /* White overlay with 60% opacity */
     z-index: -1;
 }
 
@@ -33,9 +36,11 @@ body::before {
     padding: 20px;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* top-aligned */
+    align-items: flex-start;
+    /* top-aligned */
     min-height: 100vh;
-    overflow-y: auto; /* scroll only main content */
+    overflow-y: auto;
+    /* scroll only main content */
     box-sizing: border-box;
 }
 
@@ -44,7 +49,7 @@ body::before {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #34495e;
     display: flex;
     flex-direction: column;
@@ -76,12 +81,12 @@ body::before {
     object-fit: cover;
     border: 4px solid #1abc9c;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .avatar-preview img:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(26,188,156,0.4);
+    box-shadow: 0 8px 20px rgba(26, 188, 156, 0.4);
 }
 
 /* Inputs & Textareas */
@@ -101,18 +106,18 @@ body::before {
     transition: background 0.3s, transform 0.2s;
 }
 
-.profile-form textarea{
+.profile-form textarea {
     overflow-y: auto;
-    height: 120px; 
-    resize: none; 
+    height: 120px;
+    resize: none;
 }
 
 .profile-form input:focus,
-.profile-form textarea:focus, 
+.profile-form textarea:focus,
 .profile-form input:hover,
 .profile-form textarea:hover {
     background: #ffffff;
-    box-shadow: 0 5px 15px rgba(26,188,156,0.3);
+    box-shadow: 0 5px 15px rgba(26, 188, 156, 0.3);
 }
 
 /* Submit Button */
@@ -129,7 +134,7 @@ body::before {
 .profile-form button:hover {
     background: #16a085;
     transform: scale(1.01);
-    box-shadow: 0 8px 20px rgba(26,188,156,0.4);
+    box-shadow: 0 8px 20px rgba(26, 188, 156, 0.4);
 }
 
 .hidden {
@@ -158,8 +163,13 @@ body::before {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 #toast-container {
@@ -177,7 +187,7 @@ body::before {
     color: white;
     padding: 10px 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transform: translateX(100%);
     transition: all 0.5s ease;

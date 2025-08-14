@@ -137,7 +137,7 @@ function showToast(message, duration = 3000) {
     toast.className = "toast";
     toast.innerText = message;
     toastContainer.appendChild(toast);
-    
+
     setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
         toast.classList.remove("show");

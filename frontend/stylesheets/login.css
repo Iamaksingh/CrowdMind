@@ -8,17 +8,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;  /* Changed from height: 100vh for better flow */
+    min-height: 100vh;
+    /* Changed from height: 100vh for better flow */
     padding: 20px;
 }
 
 .main_container {
     display: flex;
-    gap: 100px; /* Reduced gap */
+    gap: 100px;
+    /* Reduced gap */
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    max-width: 1200px;  /* Added max width */
+    max-width: 1200px;
+    /* Added max width */
     width: 100%;
     box-sizing: border-box;
 }
@@ -31,7 +34,8 @@ body {
     font-size: 35px;
     justify-content: center;
     align-items: center;
-    flex: 1 1 400px; /* flexible width with min */
+    flex: 1 1 400px;
+    /* flexible width with min */
     max-width: 450px;
 }
 
@@ -50,7 +54,8 @@ body {
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
-    border-right: 3px solid #34495e; /* Cursor effect */
+    border-right: 3px solid #34495e;
+    /* Cursor effect */
     width: fit-content;
 }
 
@@ -81,7 +86,8 @@ body {
 }
 
 .input-group input {
-    width: 100%; /* changed to 100% for consistent padding */
+    width: 100%;
+    /* changed to 100% for consistent padding */
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -154,7 +160,9 @@ h2 {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loader p {
@@ -166,7 +174,8 @@ h2 {
 .toast {
     visibility: hidden;
     min-width: 250px;
-    background-color: #e74c3c; /* Default red for errors */
+    background-color: #e74c3c;
+    /* Default red for errors */
     color: #fff;
     text-align: center;
     border-radius: 5px;
@@ -191,11 +200,14 @@ h2 {
     .logo_container img {
         display: none !important;
     }
-    .main_container{
+
+    .main_container {
         overflow-y: scroll;
         scrollbar-width: none;
     }
+
     .main_container::-webkit-scrollbar {
-        display: none; /* Chrome, Safari */
+        display: none;
+        /* Chrome, Safari */
     }
 }

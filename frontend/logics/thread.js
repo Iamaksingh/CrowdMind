@@ -29,32 +29,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Authorization": `Bearer ${token}`
             }
         })
-        .then(res => {
-            if (!res.ok) throw new Error(`Failed to fetch thread: ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            // Populate thread details
-            threadTitle.textContent = data.title;
-            threadDescription.textContent = data.description;
-            tags.textContent = data.tags || "General";
+            .then(res => {
+                if (!res.ok) throw new Error(`Failed to fetch thread: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                // Populate thread details
+                threadTitle.textContent = data.title;
+                threadDescription.textContent = data.description;
+                tags.textContent = data.tags || "General";
 
-            // If filePath exists, display it
-            if (data.filePath) {
-                threadImage.src = data.filePath;
-                // Prevent appending multiple times
-                if (!document.querySelector(".thread-details img.thread-photo")) {
-                    document.querySelector(".thread-details").appendChild(threadImage);
+                // If filePath exists, display it
+                if (data.filePath) {
+                    threadImage.src = data.filePath;
+                    // Prevent appending multiple times
+                    if (!document.querySelector(".thread-details img.thread-photo")) {
+                        document.querySelector(".thread-details").appendChild(threadImage);
+                    }
                 }
-            }
 
-            // Populate comments
-            renderComments(data.comment_list);
-        })
-        .catch(err => {
-            console.error(err);
-            showToast("Error loading thread details");
-        });
+                // Populate comments
+                renderComments(data.comment_list);
+            })
+            .catch(err => {
+                console.error(err);
+                showToast("Error loading thread details");
+            });
     }
 
     // Function to render comments
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Post a new comment
-    window.addComment = function() {
+    window.addComment = function () {
         const text = commentInput.value.trim();
         if (!text) return showToast("Please write a comment!");
 
@@ -93,20 +93,20 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             body: JSON.stringify({ text })
         })
-        .then(res => {
-            if (!res.ok) throw new Error(`Failed to post comment: ${res.status}`);
-            return res.json();
-        })
-        .then(() => {
-            showToast("added comment");
-            commentInput.value = "";
-            // Refetch updated thread so comments list refreshes
-            loadThread();
-        })
-        .catch(err => {
-            console.error(err);
-            showToast("Error posting comment");
-        });
+            .then(res => {
+                if (!res.ok) throw new Error(`Failed to post comment: ${res.status}`);
+                return res.json();
+            })
+            .then(() => {
+                showToast("added comment");
+                commentInput.value = "";
+                // Refetch updated thread so comments list refreshes
+                loadThread();
+            })
+            .catch(err => {
+                console.error(err);
+                showToast("Error posting comment");
+            });
     };
 
     // Initial load
@@ -119,7 +119,7 @@ function showToast(message, duration = 3000) {
     toast.className = "toast";
     toast.innerText = message;
     toastContainer.appendChild(toast);
-    
+
     setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
         toast.classList.remove("show");
