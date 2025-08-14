@@ -1,4 +1,5 @@
 import Thread from '../models/Thread.js';
+import User from '../models/User.js';
 import { cloudinary } from '../config/cloudinary.js';
 import Profile from '../models/userProfile.js';
 
@@ -128,5 +129,42 @@ export const addComment = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
+  }
+};
+
+//like/unlike on a thread
+export const like_unlike = async (req, res) => {
+  try {
+    const userId = req.user.id;      // from auth middleware
+    const threadId = req.params.id;
+
+    const thread = await Thread.findById(threadId);
+    if (!thread) return res.status(404).json({ message: "Thread not found" });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let liked = false;
+
+    if (user.likedThreads.includes(threadId)) {
+      // Unlike
+      await User.updateOne({ _id: userId }, { $pull: { likedThreads: threadId } });
+      await Thread.updateOne({ _id: threadId }, { $inc: { likes: -1 } });
+      liked = false;
+    } else {
+      // Like
+      await User.updateOne({ _id: userId }, { $push: { likedThreads: threadId } });
+      await Thread.updateOne({ _id: threadId }, { $inc: { likes: 1 } });
+      liked = true;
+    }
+
+    // Return updated likes count
+    const updatedThread = await Thread.findById(threadId);
+
+    res.json({ likes: updatedThread.likes, liked });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };

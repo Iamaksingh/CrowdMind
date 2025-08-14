@@ -1,6 +1,6 @@
 import express from 'express';
 import Thread from '../models/Thread.js';
-import { getThreads, getThreadById, deleteThread, addComment, getThreadByUser } from '../controllers/threadController.js';
+import { getThreads, getThreadById, deleteThread, addComment, getThreadByUser, like_unlike } from '../controllers/threadController.js';
 import { upload } from '../config/cloudinary.js';
 import { protect } from '../middleware/authMiddleware.js';
 const router = express.Router();
@@ -39,6 +39,7 @@ router.post('/', protect, upload.single("file"), async (req, res) => {
   }
 });
 router.get("/mythreads", protect, getThreadByUser); 
+router.post("/:id/like", protect, like_unlike );
 router.post("/:id/comments", protect, addComment);
 router.get('/:id', getThreadById);
 router.delete('/:id', protect, deleteThread);
