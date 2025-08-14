@@ -9,10 +9,8 @@ import profileRoutes from './routes/profileRoutes.js'
 dotenv.config();
 const app = express();
 app.use(cors({
-  origin: (origin, callback) => {
-    callback(null, origin || "*"); // Allow any origin dynamically
-  },
-  credentials: true // Allow cookies/sessions
+  origin: "https://crowdmind.netlify.app/", 
+  credentials: true
 }));
 app.use(express.json());
 
