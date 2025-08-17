@@ -8,7 +8,7 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
-const BaseURL="http://localhost:5000/api"
+const BaseURL = "http://localhost:5000/api";
 
 document.addEventListener("DOMContentLoaded", () => {
     const threadTitle = document.getElementById("thread-title");
@@ -17,12 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const commentsContainer = document.getElementById("comments-container");
     const commentInput = document.getElementById("comment-input");
 
-    // Create an image element for the thread photo
+    // Moderation modal elements
+    const moderationModal = document.getElementById("moderationModal");
+    const moderatedCommentInput = document.getElementById("moderatedComment");
+    const acceptModeratedBtn = document.getElementById("acceptModerated");
+    const recheckModeratedBtn = document.getElementById("recheckModerated");
+
+    // Thread image setup
     const threadImage = document.createElement("img");
     threadImage.classList.add("thread-photo");
     threadImage.style.marginTop = "10px";
 
-    // Function to fetch and display thread
+    // Fetch thread details
     function loadThread() {
         fetch(`${BaseURL}/threads/${threadId}`, {
             method: "GET",
@@ -36,21 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 return res.json();
             })
             .then(data => {
-                // Populate thread details
                 threadTitle.textContent = data.title;
                 threadDescription.textContent = data.description;
                 tags.textContent = data.tags || "General";
 
-                // If filePath exists, display it
                 if (data.filePath) {
                     threadImage.src = data.filePath;
-                    // Prevent appending multiple times
                     if (!document.querySelector(".thread-details img.thread-photo")) {
                         document.querySelector(".thread-details").appendChild(threadImage);
                     }
                 }
-
-                // Populate comments
                 renderComments(data.comment_list);
             })
             .catch(err => {
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    // Function to render comments
+    // Render comments
     function renderComments(comments) {
         if (!comments || comments.length === 0) {
             commentsContainer.innerHTML = "<p>No comments yet.</p>";
@@ -82,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Post a new comment
+    // Post new comment
     window.addComment = function () {
         const text = commentInput.value.trim();
         if (!text) return showToast("Please write a comment!");
@@ -99,11 +100,52 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!res.ok) throw new Error(`Failed to post comment: ${res.status}`);
                 return res.json();
             })
-            .then(() => {
-                showToast("added comment");
-                commentInput.value = "";
-                // Refetch updated thread so comments list refreshes
-                loadThread();
+            .then(data => {
+                if (data.comment) {
+                    // Safe → comment added directly
+                    showToast("Comment added successfully");
+                    commentInput.value = "";
+                    loadThread();
+                } else if (data.moderated) {
+                    // Unsafe → moderation required
+                    moderatedCommentInput.value = data.moderated.moderated_comment;
+                    moderationModal.classList.remove("hidden");
+
+                    // Accept moderated comment
+                    acceptModeratedBtn.onclick = () => {
+                        const finalComment = moderatedCommentInput.value.trim();
+                        if (!finalComment) return showToast("Comment cannot be empty!");
+
+                        fetch(`${BaseURL}/threads/${threadId}/comments`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ text: finalComment })
+                        })
+                            .then(res => res.json())
+                            .then(() => {
+                                moderationModal.classList.add("hidden");
+                                showToast("Moderated comment added");
+                                commentInput.value = "";
+                                loadThread();
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                showToast("Error posting moderated comment");
+                            });
+                    };
+
+                    // Recheck moderated comment
+                    recheckModeratedBtn.onclick = () => {
+                        const recheckComment = moderatedCommentInput.value.trim();
+                        if (!recheckComment) return showToast("Comment cannot be empty!");
+                        commentInput.value = recheckComment; // push back to input
+                        moderationModal.classList.add("hidden");
+                        showToast("You can edit and re-submit your comment");
+                    };
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -115,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadThread();
 });
 
-
+// Toast utility
 function showToast(message, duration = 3000) {
     const toast = document.createElement("div");
     toast.className = "toast";

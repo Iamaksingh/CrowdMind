@@ -1,29 +1,107 @@
+/* Modal backdrop */
 #moderationModal {
     position: fixed; 
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
     display: flex; 
     justify-content: center; 
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.3s ease;
 }
 
+/* Modal box */
 .modal-content {
     background: #fff; 
-    padding: 20px; 
-    border-radius: 8px; 
+    padding: 24px 28px; 
+    border-radius: 16px; 
     width: 90%; 
-    max-width: 500px;
+    max-width: 550px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    animation: scaleIn 0.25s ease;
 }
 
+/* Title */
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+/* Label */
+.modal-content label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+    color: #444;
+}
+
+/* Textarea */
+.modal-content textarea {
+    width: 100%;
+    border: 1px solid #ccc; 
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.modal-content textarea:focus {
+    border-color: #4f46e5; /* nice indigo focus */
+}
+
+/* Buttons wrapper */
 .modal-buttons { 
-    margin-top: 15px; 
+    margin-top: 18px; 
     display: flex; 
     justify-content: flex-end; 
-    gap: 10px; 
+    gap: 12px; 
 }
 
+/* Buttons */
+.modal-buttons button {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Accept = primary */
+#acceptModerated {
+    background: #4f46e5; 
+    color: #fff;
+}
+#acceptModerated:hover {
+    background: #4338ca;
+}
+
+/* Recheck = secondary */
+#recheckModerated {
+    background: #f3f4f6; 
+    color: #111;
+}
+#recheckModerated:hover {
+    background: #e5e7eb;
+}
+
+/* Hidden utility */
 .hidden { 
-    display: none !important;; 
+    display: none !important; 
+}
+
+/* Animation */
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }

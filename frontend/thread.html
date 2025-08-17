@@ -12,14 +12,14 @@
 </head>
 
 <body>
-    <div id="moderationModal" class="modal" style="display:none;">
+    <div id="moderationModal" class="hidden">
         <div class="modal-content">
-            <h3>Content Requires Moderation</h3>
-            <textarea id="moderatedText" rows="4" cols="50"></textarea>
+            <h3>Moderation Required</h3>
+            <label for="moderatedComment">Comment</label>
+            <textarea id="moderatedComment" rows="5"></textarea>
             <div class="modal-buttons">
-                <button id="recheckBtn">Recheck</button>
-                <button id="acceptBtn">Accept</button>
-                <button id="cancelBtn">Cancel</button>
+                <button id="acceptModerated">Accept</button>
+                <button id="recheckModerated">Recheck</button>
             </div>
         </div>
     </div>

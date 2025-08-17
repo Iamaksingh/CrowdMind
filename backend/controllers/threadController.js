@@ -231,7 +231,7 @@ Comment: """${text}"""
 
     // Step 3: Unsafe → get moderated comment
     const moderationPrompt = `
-Moderate the following comment to remove bias or toxicity.
+Please give me a comment which would somewhat mean this and that should be not toxic or biased
 Return strict JSON:
 - moderated_comment
 
