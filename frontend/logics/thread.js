@@ -138,12 +138,32 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
 
                     // Recheck moderated comment
-                    recheckModeratedBtn.onclick = () => {
+                    recheckModeratedBtn.onclick = async () => {
                         const recheckComment = moderatedCommentInput.value.trim();
-                        if (!recheckComment) return showToast("Comment cannot be empty!");
-                        commentInput.value = recheckComment; // push back to input
-                        moderationModal.classList.add("hidden");
-                        showToast("You can edit and re-submit your comment");
+                        if (!recheckComment) {
+                            showToast("Comment cannot be empty!");
+                            return;
+                        }
+
+                        try {
+                            const result = await postComment(recheckComment); // ⬅️ your function to call backend
+
+                            if (result.message === "moderate this statement to remove bias and toxicity") {
+                                // ❌ Still flagged → keep modal open
+                                showToast("Still flagged. Please edit and try again.");
+                                return;
+                            }
+
+                            // ✅ Success → close modal + reset input
+                            moderationModal.classList.add("hidden");
+                            showToast("Comment posted successfully!");
+                            commentInput.value = "";
+                            appendCommentToUI(result.comment); // ⬅️ helper to update UI
+
+                        } catch (err) {
+                            console.error(err);
+                            showToast("Failed to post moderated comment.");
+                        }
                     };
                 }
             })
