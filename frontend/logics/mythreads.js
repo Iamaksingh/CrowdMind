@@ -4,7 +4,7 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
-const BaseURL="http://localhost:5000/api"
+const BaseURL="https://crowdmind-backend.onrender.com/api"
 // Fetch threads from backend
 async function fetchThreads() {
     try {
