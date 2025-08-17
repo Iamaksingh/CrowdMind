@@ -8,56 +8,82 @@
     <link rel="stylesheet" href="stylesheets/navbar.css">
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
     <link rel="stylesheet" href="stylesheets/new_thread.css">
+    <link rel="stylesheet" href="stylesheets/moderation.css">
 </head>
 
 <body>
+    <!-- ✅ Moderation Modal -->
+    <div id="moderationModal" class="hidden">
+        <div class="modal-content">
+            <h3>Moderation Required</h3>
+            <label for="moderatedTitle">Title</label>
+            <input type="text" id="moderatedTitle">
+
+            <label for="moderatedDescription">Description</label>
+            <textarea id="moderatedDescription" rows="5"></textarea>
+
+            <div class="modal-buttons">
+                <button id="acceptModerated">Accept</button>
+                <button id="recheckModerated">Recheck</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Sidebar Navigation -->
     <div class="sidebar">
         <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
         <button onclick="window.location.href='landing.html'">𖠿 Home</button>
-        <button onclick="window.location.href='new_thread.html'">🧵New Thread</button>
-        <button onclick="window.location.href='mythreads.html'">🪡My Thread</button>
+        <button onclick="window.location.href='new_thread.html'">🧵 New Thread</button>
+        <button onclick="window.location.href='mythreads.html'">🪡 My Threads</button>
         <button onclick="window.location.href='profile.html'">👨🏻‍💼 Profile</button>
-        <button onclick="logout()">🔑Logout</button>
+        <button onclick="logout()">🔑 Logout</button>
     </div>
+
+    <!-- ✅ Main Content -->
     <div class="main-content">
         <div class="form-container">
             <h2>Create a New Thread</h2>
+
             <form id="new-thread-form" class="new-thread-form" novalidate enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Thread Title</label>
                     <input type="text" id="title" name="title" placeholder="Enter thread title..." required>
                 </div>
+
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea class="thread-description" rows="5" id="description" placeholder="Describe your thread..."
-                        required></textarea>
+                    <textarea class="thread-description" rows="5" id="description" placeholder="Describe your thread..." required></textarea>
                 </div>
-                <!-- right now theseare hidden  -->
-                <!-- <div class="ai-features">
-                    <button type="button" id="ai-content-suggest">✨ Suggest Content</button>
-                    <button type="button" id="ai-moderate">🔍 Moderate Content</button>
-                    <button type="button" id="ai-engagement-predict">📊 Check Bias</button>
-                </div> -->
+
+                <!-- 📂 Custom File Upload -->
                 <div class="custom-file-upload">
                     <button id="custom-upload-btn" type="button">📂 Choose File</button>
                     <span id="file-name">No file chosen</span>
                     <input type="file" id="media-upload-input" accept="image/*, video/*" multiple hidden name="file">
                 </div>
+
+                <!-- 📷 File Previews -->
                 <div id="preview-container"></div>
+
                 <div class="form-group">
                     <label for="tags">Tags (comma-separated)</label>
                     <input type="text" name="tags" id="tags" placeholder="e.g., AI, Machine Learning, Ethics">
                 </div>
+
                 <button type="submit" class="submit-btn" id="submitButton">Post Thread</button>
             </form>
+
+            <!-- 🔄 Loading Spinner -->
             <div id="loading" class="hidden">
                 <div class="spinner"></div>
                 <p>Submitting...</p>
             </div>
         </div>
-        <!-- Toast container (already in HTML) -->
+
+        <!-- 🔔 Toast Notifications -->
         <div id="toastContainer"></div>
     </div>
+
     <script src="logics/new_thread.js"></script>
     <script>
         function logout() {

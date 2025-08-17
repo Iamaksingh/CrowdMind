@@ -8,10 +8,21 @@
     <link rel="stylesheet" href="stylesheets/navbar.css">
     <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
     <link rel="stylesheet" href="stylesheets/thread.css">
+    <link rel="stylesheet" href="stylesheets/moderation.css">
 </head>
 
 <body>
-
+    <div id="moderationModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Content Requires Moderation</h3>
+            <textarea id="moderatedText" rows="4" cols="50"></textarea>
+            <div class="modal-buttons">
+                <button id="recheckBtn">Recheck</button>
+                <button id="acceptBtn">Accept</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
     <div class="sidebar">
         <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
         <button onclick="window.location.href='landing.html'">𖠿 Home</button>

@@ -8,6 +8,8 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+const BaseURL="http://localhost:5000/api"
+
 document.addEventListener("DOMContentLoaded", () => {
     const threadTitle = document.getElementById("thread-title");
     const threadDescription = document.getElementById("thread-description");
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to fetch and display thread
     function loadThread() {
-        fetch(`https://crowdmind-backend.onrender.com/api/threads/${threadId}`, {
+        fetch(`${BaseURL}/threads/${threadId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -85,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const text = commentInput.value.trim();
         if (!text) return showToast("Please write a comment!");
 
-        fetch(`https://crowdmind-backend.onrender.com/api/threads/${threadId}/comments`, {
+        fetch(`${BaseURL}/threads/${threadId}/comments`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

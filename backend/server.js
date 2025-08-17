@@ -8,8 +8,20 @@ import profileRoutes from './routes/profileRoutes.js'
 
 dotenv.config();
 const app = express();
+const allowedOrigins = [
+  "http://127.0.0.1:5500",   // live frontend in VS Code
+  "http://localhost:5500",   // optional alternative
+  "https://crowdmind.netlify.app" // production frontend
+];
 app.use(cors({
-  origin: ["http://localhost:5500","https://crowdmind.netlify.app"],
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests like Postman
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = "CORS policy does not allow this origin.";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());

@@ -4,10 +4,11 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+const BaseURL="http://localhost:5000/api"
 // Fetch threads from backend
 async function fetchThreads() {
     try {
-        const res = await fetch("https://crowdmind-backend.onrender.com/api/threads", {
+        const res = await fetch(`${BaseURL}/threads`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -53,7 +54,7 @@ function createThreadElement(thread) {
     likeBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`https://crowdmind-backend.onrender.com/api/threads/${thread._id}/like`, {
+            const res = await fetch(`${BaseURL}/like`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });

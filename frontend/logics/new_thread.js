@@ -5,12 +5,16 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+const BaseURL = "http://localhost:5000/api";
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("new-thread-form");
     const fileInput = document.getElementById("media-upload-input");
     const customButton = document.getElementById("custom-upload-btn");
     const fileNameDisplay = document.getElementById("file-name");
     const previewContainer = document.getElementById("preview-container");
+    const loading = document.getElementById("loading");
+    const submitButton = document.getElementById("submitButton");
 
     let selectedFiles = [];
 
@@ -90,48 +94,30 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append("file", file);
         });
 
-        //add loading
+        // Show loading, hide button
         loading.classList.remove("hidden");
-        //remove thread button
-        let submitButton = document.getElementById("submitButton");
         submitButton.classList.add("hidden");
 
         try {
-            const response = await fetch("https://crowdmind-backend.onrender.com/api/threads", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-                body: formData
-            });
+            const result = await postThread(formData);
 
-            const result = await response.json();
-            if (!response.ok) {
-                console.error("Error posting thread:", result);
-                showToast(`Failed to post: ${result.message || "Unknown error"}`);
-                return;
+            if (result.message === "Content requires moderation") {
+                showModerationModal(result.moderated, formData, form, loading, submitButton, previewContainer);
+            } else {
+                showToast("Thread posted successfully!");
+                resetForm(form, previewContainer);
             }
-
-            console.log("✅ Thread posted:", result);
-            showToast("Thread posted successfully!");
-
-            form.reset();
-            selectedFiles = [];
-            updateFileName();
-            previewContainer.innerHTML = "";
-
         } catch (error) {
             console.error("Network error:", error);
             showToast("Network error. Please try again.");
         } finally {
-            // Hide loading spinner
             loading.classList.add("hidden");
-            // show submit button
             submitButton.classList.remove("hidden");
         }
     });
 });
 
+// 🔔 Toast utility
 function showToast(message, duration = 3000) {
     const toast = document.createElement("div");
     toast.className = "toast";
@@ -143,4 +129,78 @@ function showToast(message, duration = 3000) {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 500);
     }, duration);
+}
+
+// 📝 Reset form
+function resetForm(form, previewContainer) {
+    form.reset();
+    previewContainer.innerHTML = "";
+    document.getElementById("file-name").textContent = "No file chosen";
+}
+
+// ⚖️ Moderation Modal
+const moderationModal = document.getElementById("moderationModal");
+const moderatedTitle = document.getElementById("moderatedTitle");
+const moderatedDescription = document.getElementById("moderatedDescription");
+const acceptBtn = document.getElementById("acceptModerated");
+const recheckBtn = document.getElementById("recheckModerated");
+
+function showModerationModal(moderatedData, originalFormData, form, loading, submitButton, previewContainer) {
+    moderatedTitle.value = moderatedData.moderated_title;
+    moderatedDescription.value = moderatedData.moderated_description;
+    moderationModal.classList.remove("hidden");
+
+    acceptBtn.onclick = async () => {
+        originalFormData.set("title", moderatedTitle.value);
+        originalFormData.set("description", moderatedDescription.value);
+
+        try {
+            const result = await postThread(originalFormData);
+            if (result.message === "Content requires moderation") {
+                // ❌ Still rejected → keep modal open
+                showToast("Content still flagged. Please revise again.");
+                return;
+            }
+            // ✅ Success → close modal
+            moderationModal.classList.add("hidden");
+            showToast("Thread posted successfully!");
+            resetForm(form, previewContainer);
+        } catch (err) {
+            console.error(err);
+            showToast("Failed to post moderated thread.");
+        }
+    };
+
+    recheckBtn.onclick = async () => {
+        originalFormData.set("title", moderatedTitle.value);
+        originalFormData.set("description", moderatedDescription.value);
+
+        try {
+            const result = await postThread(originalFormData);
+            if (result.message === "Content requires moderation") {
+                // ❌ Keep modal open again
+                showToast("Still flagged. Edit and try again.");
+                return;
+            }
+            // ✅ Success
+            moderationModal.classList.add("hidden");
+            showToast("Thread posted successfully!");
+            resetForm(form, previewContainer);
+        } catch (err) {
+            console.error(err);
+            showToast("Failed to post moderated thread.");
+        }
+    };
+}
+
+// 📡 API call wrapper
+async function postThread(formData) {
+    const response = await fetch(`${BaseURL}/threads`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        body: formData
+    });
+    return await response.json();
 }

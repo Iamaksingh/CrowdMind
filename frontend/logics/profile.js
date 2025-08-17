@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://crowdmind-backend.onrender.com';
+const BACKEND_URL ="http://localhost:5000/api";
 const token = localStorage.getItem("token");
 
 if (!token || token === "0") {
@@ -37,7 +37,7 @@ function showToast(message, duration = 3000) {
 async function loadProfile() {
     loader.classList.remove("hidden"); // show loader
     try {
-        const res = await fetch(`${BACKEND_URL}/api/profile/me`, {
+        const res = await fetch(`${BACKEND_URL}/profile/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
