@@ -86,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Post new comment
     window.addComment = function () {
-        const text = commentInput.value.trim();
-        if (!text) return showToast("Please write a comment!");
+        const comment = commentInput.value.trim();
+        if (!comment) return showToast("Please write a comment!");
 
         fetch(`${BaseURL}/threads/${threadId}/comments`, {
             method: "POST",
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ text })
+            body: JSON.stringify({ text:comment })
         })
             .then(res => {
                 if (!res.ok) throw new Error(`Failed to post comment: ${res.status}`);
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     "Content-Type": "application/json",
                                     "Authorization": `Bearer ${token}`
                                 },
-                                body: JSON.stringify({finalComment})
+                                body: JSON.stringify({text:finalComment})
                             });
 
                             const data = await res.json();
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         } catch (err) {
                             console.error(err);
-                            showToast("Error posting moderated thread");
+                            showToast("Error posting moderated comment");
                         }
                     };
                     const exitModeratedBtn = document.getElementById("exitModerated");
