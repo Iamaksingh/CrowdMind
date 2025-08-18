@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         try {
-                            const res = await fetch(`${BaseURL}/threads`, {
+                            const res = await fetch(`${BaseURL}/threads/${threadId}/comments`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
