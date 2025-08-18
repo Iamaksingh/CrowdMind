@@ -114,11 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Accept moderated comment
                     acceptModeratedBtn.onclick = async () => {
-                        const finalTitle = moderatedTitle.value.trim();
-                        const finalDescription = moderatedDescription.value.trim();
-
-                        if (!finalTitle || !finalDescription) {
-                            return showToast("Title and description cannot be empty!");
+                        const finalComment = moderatedCommentInput.value.trim();
+                        if (!finalComment) {
+                            return showToast("Comment cannot be empty!");
                         }
 
                         try {
@@ -129,8 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     "Authorization": `Bearer ${token}`
                                 },
                                 body: JSON.stringify({
-                                    title: finalTitle,
-                                    description: finalDescription
+                                    text: finalComment 
                                 })
                             });
 
@@ -144,9 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             } else if (data.moderated) {
                                 // ❌ Still flagged → keep modal open with updated suggestions
-                                moderatedTitle.value = data.moderated.moderated_title;
-                                moderatedDescription.value = data.moderated.moderated_description;
-
+                                moderatedCommentInput.value = data.moderated.moderated_comment;
                                 showToast("Still flagged. Please edit and try again.");
                             } else {
                                 showToast("Something went wrong, try again.");
