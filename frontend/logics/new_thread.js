@@ -6,6 +6,7 @@ if (!token || token === "0") {
 }
 
 const BaseURL = "https://crowdmind-backend.onrender.com/api";
+// const BaseURL="http://localhost:5000/api"
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("new-thread-form");
@@ -151,45 +152,45 @@ function showModerationModal(moderatedData, originalFormData, form, loading, sub
     moderationModal.classList.remove("hidden");
 
     acceptBtn.onclick = async () => {
-        originalFormData.set("title", moderatedTitle.value);
-        originalFormData.set("description", moderatedDescription.value);
+        const finalTitle = moderatedTitle.value.trim();
+        const finalDescription = moderatedDescription.value.trim();
+
+        if (!finalTitle || !finalDescription) {
+            return showToast("Title and description cannot be empty!");
+        }
+
+        originalFormData.set("title", finalTitle);
+        originalFormData.set("description", finalDescription);
 
         try {
             const result = await postThread(originalFormData);
-            if (result.message === "Content requires moderation") {
-                // ❌ Still rejected → keep modal open
-                showToast("Content still flagged. Please revise again.");
-                return;
+
+            if (result.thread) {
+                // ✅ Success → close modal
+                moderationModal.classList.add("hidden");
+                showToast("Thread posted successfully!");
+                resetForm(form, previewContainer);
             }
-            // ✅ Success → close modal
-            moderationModal.classList.add("hidden");
-            showToast("Thread posted successfully!");
-            resetForm(form, previewContainer);
+            else if (result.moderated) {
+                // ❌ Still flagged → update modal fields
+                moderatedTitle.value = result.moderated.moderated_title;
+                moderatedDescription.value = result.moderated.moderated_description;
+                showToast("Still flagged. Please edit and try again.");
+            }
+            else {
+                showToast("Something went wrong, try again.");
+            }
         } catch (err) {
             console.error(err);
             showToast("Failed to post moderated thread.");
         }
     };
 
-    recheckBtn.onclick = async () => {
-        originalFormData.set("title", moderatedTitle.value);
-        originalFormData.set("description", moderatedDescription.value);
 
-        try {
-            const result = await postThread(originalFormData);
-            if (result.message === "Content requires moderation") {
-                // ❌ Keep modal open again
-                showToast("Still flagged. Edit and try again.");
-                return;
-            }
-            // ✅ Success
-            moderationModal.classList.add("hidden");
-            showToast("Thread posted successfully!");
-            resetForm(form, previewContainer);
-        } catch (err) {
-            console.error(err);
-            showToast("Failed to post moderated thread.");
-        }
+    const exitModeratedBtn = document.getElementById("exitModerated");
+    exitModeratedBtn.onclick = () => {
+        moderationModal.classList.add("hidden");
+        showToast("Exited moderation without posting");
     };
 }
 

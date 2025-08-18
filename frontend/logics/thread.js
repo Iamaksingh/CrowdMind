@@ -9,6 +9,7 @@ if (!token || token === "0") {
 }
 
 const BaseURL = "https://crowdmind-backend.onrender.com/api";
+// const BaseURL="http://localhost:5000/api"
 
 document.addEventListener("DOMContentLoaded", () => {
     const threadTitle = document.getElementById("thread-title");
@@ -112,58 +113,56 @@ document.addEventListener("DOMContentLoaded", () => {
                     moderationModal.classList.remove("hidden");
 
                     // Accept moderated comment
-                    acceptModeratedBtn.onclick = () => {
-                        const finalComment = moderatedCommentInput.value.trim();
-                        if (!finalComment) return showToast("Comment cannot be empty!");
+                    acceptModeratedBtn.onclick = async () => {
+                        const finalTitle = moderatedTitle.value.trim();
+                        const finalDescription = moderatedDescription.value.trim();
 
-                        fetch(`${BaseURL}/threads/${threadId}/comments`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ text: finalComment })
-                        })
-                            .then(res => res.json())
-                            .then(() => {
-                                moderationModal.classList.add("hidden");
-                                showToast("Moderated comment added");
-                                commentInput.value = "";
-                                loadThread();
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                showToast("Error posting moderated comment");
-                            });
-                    };
-
-                    // Recheck moderated comment
-                    recheckModeratedBtn.onclick = async () => {
-                        const recheckComment = moderatedCommentInput.value.trim();
-                        if (!recheckComment) {
-                            showToast("Comment cannot be empty!");
-                            return;
+                        if (!finalTitle || !finalDescription) {
+                            return showToast("Title and description cannot be empty!");
                         }
 
                         try {
-                            const result = await postComment(recheckComment); // ⬅️ your function to call backend
+                            const res = await fetch(`${BaseURL}/threads`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    title: finalTitle,
+                                    description: finalDescription
+                                })
+                            });
 
-                            if (result.message === "moderate this statement to remove bias and toxicity") {
-                                // ❌ Still flagged → keep modal open
+                            const data = await res.json();
+
+                            if (data.thread) {
+                                // ✅ Thread passed moderation
+                                moderationModal.classList.add("hidden");
+                                showToast("Thread posted successfully!");
+                                resetForm(form, previewContainer);
+
+                            } else if (data.moderated) {
+                                // ❌ Still flagged → keep modal open with updated suggestions
+                                moderatedTitle.value = data.moderated.moderated_title;
+                                moderatedDescription.value = data.moderated.moderated_description;
+
                                 showToast("Still flagged. Please edit and try again.");
-                                return;
+                            } else {
+                                showToast("Something went wrong, try again.");
                             }
-
-                            // ✅ Success → close modal + reset input
-                            moderationModal.classList.add("hidden");
-                            showToast("Comment posted successfully!");
-                            commentInput.value = "";
-                            appendCommentToUI(result.comment); // ⬅️ helper to update UI
 
                         } catch (err) {
                             console.error(err);
-                            showToast("Failed to post moderated comment.");
+                            showToast("Error posting moderated thread");
                         }
+                    };
+                    const exitModeratedBtn = document.getElementById("exitModerated");
+                    exitModeratedBtn.onclick = () => {
+                        moderationModal.classList.add("hidden");
+                        commentInput.value = "";
+                        moderatedCommentInput.value = "";
+                        showToast("Exited moderation without posting");
                     };
                 }
             })
