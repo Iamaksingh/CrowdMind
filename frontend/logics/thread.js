@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ text:comment })
+            body: JSON.stringify({ text: comment })
         })
             .then(res => {
                 if (!res.ok) throw new Error(`Failed to post comment: ${res.status}`);
@@ -126,19 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
                                     "Content-Type": "application/json",
                                     "Authorization": `Bearer ${token}`
                                 },
-                                body: JSON.stringify({text:finalComment})
+                                body: JSON.stringify({ text: finalComment })
                             });
 
                             const data = await res.json();
 
-                            if (data.thread) {
-                                // ✅ Thread passed moderation
+                            if (data.comment) {
+                                // ✅ Comment passed moderation
                                 moderationModal.classList.add("hidden");
-                                showToast("Thread posted successfully!");
-                                resetForm(form, previewContainer);
-
+                                showToast("Comment posted successfully!");
+                                commentInput.value = "";
+                                moderatedCommentInput.value = "";
+                                loadThread();
                             } else if (data.moderated) {
-                                // ❌ Still flagged → keep modal open with updated suggestions
+                                // ❌ Still flagged → keep modal open
                                 moderatedCommentInput.value = data.moderated.moderated_comment;
                                 showToast("Still flagged. Please edit and try again.");
                             } else {
