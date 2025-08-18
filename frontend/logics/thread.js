@@ -8,8 +8,8 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
-// const BaseURL = "https://crowdmind-backend.onrender.com/api";
-const BaseURL="http://localhost:5000/api"
+const BaseURL = "https://crowdmind-backend.onrender.com/api";
+// const BaseURL="http://localhost:5000/api"
 
 document.addEventListener("DOMContentLoaded", () => {
     const threadTitle = document.getElementById("thread-title");
