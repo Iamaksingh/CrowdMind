@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     "Authorization": `Bearer ${token}`
                                 },
                                 body: JSON.stringify({
-                                    text: finalComment 
+                                    finalComment 
                                 })
                             });
 
