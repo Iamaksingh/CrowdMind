@@ -61,7 +61,11 @@ Description: """${description}"""
 
     // Step 3: Unsafe → get moderated content
     const moderationPrompt = `
-Moderate the following title and description to remove bias or toxicity.
+Moderate the following title and description to remove bias or toxicity. i want it to be just a 
+statement that could be directly replaced by this biased/toxic 
+statemnt and please dont give me anything generic like i cant
+ generate based on this statement. i want to directly be able t
+ o post it as a comment
 Return strict JSON:
 - moderated_title
 - moderated_description
@@ -231,7 +235,12 @@ Comment: """${text}"""
 
     // Step 3: Unsafe → get moderated comment
     const moderationPrompt = `
-Please give me a comment which would somewhat mean this and that should be not toxic or biased
+Please give me a comment which would somewhat mean this and 
+that should be not toxic or biased. i want it to be just a 
+statement that could be directly replaced by this biased/toxic 
+statemnt and please dont give me anything generic like i cant
+ generate based on this statement. i want to directly be able t
+ o post it as a comment
 Return strict JSON:
 - moderated_comment
 
