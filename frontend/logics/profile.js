@@ -100,7 +100,7 @@ form.addEventListener('submit', async (e) => {
     loader.classList.remove("hidden"); // show loader
 
     try {
-        const res = await fetch(`${BACKEND_URL}/api/profile`, {
+        const res = await fetch(`${BACKEND_URL}/profile`, {
             method: 'POST',
             body: formData,
             headers: { 'Authorization': `Bearer ${token}` }
