@@ -1,15 +1,21 @@
 /* General Styles */
+:root{
+    --primary-start: #667eea;
+    --primary-end: #764ba2;
+    --muted: #7f8c8d;
+    --text-dark: #24303b;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: rgb(239, 240, 241);
+    background-color: rgb(244, 246, 250);
     font-family: Arial, sans-serif;
-    color: #ffffff;
+    color: var(--text-dark);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    /* Changed from height: 100vh for better flow */
     padding: 20px;
 }
 
@@ -61,14 +67,15 @@ body {
 
 /* Login Container */
 .login-container {
-    color: white;
-    background-color: rgb(43, 61, 79);
-    padding: 25px;
-    border-radius: 10px;
+    color: var(--text-dark);
+    background: linear-gradient(180deg, #ffffff, #fbfcff);
+    padding: 28px;
+    border-radius: 12px;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(36,48,59,0.08);
+    border: 1px solid rgba(36,48,59,0.04);
     flex: 1 1 350px;
 }
 
@@ -87,17 +94,17 @@ body {
 
 .input-group input {
     width: 100%;
-    /* changed to 100% for consistent padding */
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #34495e;
-    color: #ffffff;
+    padding: 12px;
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--text-dark);
     box-sizing: border-box;
 }
 
 .input-group input:focus {
-    border: 1px solid #1abc9c;
+    border: 1px solid rgba(102,126,234,0.6);
+    box-shadow: 0 6px 18px rgba(102,126,234,0.06);
     outline: none;
 }
 
@@ -122,18 +129,20 @@ body {
 /* Buttons */
 button {
     width: 100%;
-    padding: 10px;
-    background-color: #34495e;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
     margin-bottom: 10px;
+    font-weight: 700;
 }
 
 button:hover {
-    background-color: #1abc9c;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(102,126,234,0.14);
 }
 
 h2 {
@@ -168,17 +177,16 @@ h2 {
 .loader p {
     font-size: 14px;
     margin-top: 5px;
-    color: #fff;
+    color: var(--muted);
 }
 
 .toast {
     visibility: hidden;
     min-width: 250px;
     background-color: #e74c3c;
-    /* Default red for errors */
     color: #fff;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 8px;
     padding: 12px;
     position: fixed;
     bottom: 30px;

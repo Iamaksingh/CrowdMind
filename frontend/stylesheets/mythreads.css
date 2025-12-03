@@ -1,4 +1,4 @@
-/* General Styles */
+/* ----------- BASE STYLES ----------- */
 * {
     margin: 0;
     padding: 0;
@@ -6,13 +6,8 @@
     font-family: Arial, sans-serif;
 }
 
-/* Use Montserrat for headings and buttons */
-h1,
-h2,
-h3,
-button {
+h1, h2, h3, button {
     font-family: 'Montserrat', sans-serif;
-    font-weight: bold;
 }
 
 body {
@@ -21,10 +16,8 @@ body {
     height: 100vh;
     background-image: url("../src/doodle2.jpg");
     background-size: cover;
-    /* Ensures the image covers the whole page */
     background-repeat: repeat;
     background-attachment: fixed;
-    /* Keeps the background fixed while scrolling */
     background-position: center;
 }
 
@@ -36,7 +29,6 @@ body::before {
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.6);
-    /* White overlay with 60% opacity */
     z-index: -1;
 }
 
@@ -47,9 +39,7 @@ body::before {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-    /* Enable scrolling */
     height: 100vh;
-    /* Full height */
     position: relative;
 }
 
@@ -62,10 +52,8 @@ body::before {
     margin-bottom: 20px;
     text-align: center;
     position: sticky;
-    /* Keep the search bar fixed */
     top: 0px;
     z-index: 10;
-    /* Ensure it's above other content */
 }
 
 .search-bar:focus {
@@ -73,58 +61,126 @@ body::before {
     border: 1px solid #34495e;
 }
 
-/* Thread List */
+/* ----------- THREAD LIST ----------- */
 .thread-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 90%;
+    gap: 15px;
+    min-width: 90%;
 }
 
 .thread {
     background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, transform 0.3s;
+    overflow: hidden;
 }
 
 .thread:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* ----------- TWO COLUMN CARD LAYOUT (Landing Style) ----------- */
+.thread-card-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    padding: 15px;
+    align-items: stretch;
+}
+
+/* Left: Image */
+.thread-image-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.thread-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.thread-image-placeholder {
+    font-size: 60px;
+    color: #ccc;
+}
+
+/* Right: Content */
+.thread-content-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .thread-title {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 5px;
+    color: #2c3e50;
 }
 
-.thread-content {
+.thread-description {
     font-size: 14px;
     color: #555;
+    line-height: 1.5;
 }
 
-.thread-image {
-    margin-top: 9px;
-    width: 100%;
-    height: 400px;
-    /* Limits height */
-    object-fit: scale-down;
-    /* Ensures the image maintains aspect ratio */
-    border-radius: 20px;
-    /* Rounded corners */
-    margin-bottom: 10px;
-    /* Adds space below the image */
-    border: 1px solid #777;
-    padding: 15px;
+/* Summary Box */
+.thread-summary-box {
+    background: #f0f7ff;
+    border-left: 3px solid #3498db;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 8px 0;
 }
 
+.thread-summary-box h4 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #2c3e50;
+    text-transform: uppercase;
+}
+
+.thread-summary-box p {
+    margin: 0;
+    font-size: 13px;
+    color: #34495e;
+    line-height: 1.5;
+}
+
+/* Tags */
+.thread-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #e8f0f8;
+    color: #2c3e50;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Actions Bar */
 .thread-meta {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    margin-top: 5px;
     font-size: 17px;
     color: #777;
+    padding: 10px 18px;
 }
 
 .thread-actions {
@@ -147,22 +203,15 @@ body::before {
 
 .thread-link {
     text-decoration: none;
-    /* Remove underline */
     color: inherit;
-    /* Use the normal text color */
     display: block;
-    /* Make the whole area clickable */
 }
 
-.thread-link:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    /* Optional hover effect */
-    transition: background-color 0.2s;
-    border-radius: 20px;
-}
-
+/* ----------- DELETE SLIDER (KEPT FROM YOUR MYTHREAD.CSS) ----------- */
 .delete-slider {
-    margin-top: 8px;
+    margin: 15px auto 18px;
+    display: flex;
+    justify-content: center;
 }
 
 .delete-slider-track {
@@ -175,9 +224,8 @@ body::before {
     transition: background 0.2s ease;
 }
 
-.delete-slider-track.active {
+.delete-slider-track.confirm {
     background: #e74c3c;
-    /* darker red when at end */
 }
 
 .delete-slider-handle {
@@ -206,35 +254,11 @@ body::before {
     pointer-events: none;
 }
 
-#toast-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 9999;
-}
-
-.toast {
-    background: #1abc9c;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.5s ease;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.delete-slider,
-.delete-slider-track,
-.delete-slider-handle {
-    user-select: none;
-    /* prevent blue highlight */
+/* ----------- RESPONSIVE ----------- */
+@media (max-width: 768px) {
+    .thread-card-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 12px;
+    }
 }

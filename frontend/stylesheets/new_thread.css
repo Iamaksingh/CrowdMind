@@ -1,3 +1,10 @@
+:root {
+    --primary-start: #667eea;
+    --primary-end: #764ba2;
+    --accent-teal: #1abc9c;
+    --muted: #7f8c8d;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -41,10 +48,10 @@ body::before {
 .form-container {
     width: 90%;
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #34495e;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.06);
 }
 
 .form-container h2 {
@@ -65,15 +72,16 @@ label {
 input,
 textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
 }
 
 input:focus,
 textarea:focus {
     outline: none;
-    border-color: #34495e;
+    border-color: var(--primary-start);
+    box-shadow: 0 0 0 4px rgba(102,126,234,0.08);
 }
 
 .thread-description {
@@ -94,7 +102,7 @@ textarea:focus {
 
 .thread-description:focus {
     outline: none;
-    border: 1px solid #1abc9c;
+    border: 1px solid var(--primary-start);
 }
 
 .ai-features {
@@ -110,20 +118,20 @@ textarea:focus {
 }
 
 .ai-features button {
-    background: #1abc9c;
-    /* Green theme color */
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 10px 16px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
     width: 30%;
+    box-shadow: 0 6px 18px rgba(102,126,234,0.12);
 }
 
 .ai-features button:hover {
-    background: #16a085;
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(102,126,234,0.18);
 }
 
 .custom-file-upload {
@@ -133,19 +141,18 @@ textarea:focus {
 }
 
 #custom-upload-btn {
-    background-color: #1abc9c;
-    ;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: white;
-    padding: 10px 15px;
+    padding: 10px 14px;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s, transform 0.2s;
+    border-radius: 8px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 6px 14px rgba(102,126,234,0.12);
 }
 
 #custom-upload-btn:hover {
-    transform: scale(1.01);
-    background: #16a085;
+    transform: translateY(-2px);
 }
 
 #preview-container {
@@ -210,19 +217,20 @@ textarea:focus {
 }
 
 button.submit-btn {
-    background: #1abc9c;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: white;
     border: none;
-    padding: 10px;
+    padding: 12px 14px;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(102,126,234,0.16);
 }
 
 button.submit-btn:hover {
-    transform: scale(1.01);
-    background: #16a085;
+    transform: translateY(-3px);
 }
 
 /* Loading Spinner */
