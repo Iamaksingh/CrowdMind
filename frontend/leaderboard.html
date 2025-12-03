@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | CrowdMind</title>
+    <link rel="stylesheet" href="stylesheets/landing.css">
+    <link rel="stylesheet" href="stylesheets/leaderboard.css">
+    <link rel="stylesheet" href="stylesheets/navbar.css">
+    <link rel="stylesheet" href="stylesheets/mobileResponsive.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="src/logo.png" alt="CrowdMind Logo" class="logo">
+        <button onclick="window.location.href='landing.html'">𖠿 Home</button>
+        <button onclick="window.location.href='new_thread.html'">🧵 New Thread</button>
+        <button onclick="window.location.href='mythreads.html'">🪡 My Thread</button>
+        <button onclick="window.location.href='leaderboard.html'" class="active">📊 Leaderboard</button>
+        <button onclick="window.location.href='profile.html'">👨🏻‍💼 Profile</button>
+        <button onclick="logout()">🔑 Logout</button>
+    </div>
+
+    <div class="main-content">
+        <div class="leaderboard-container">
+            <h1>Community Leaderboard</h1>
+            <p class="subtitle">Track user engagement and moderation scores</p>
+
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="sortBy">Sort By:</label>
+                    <select id="sortBy">
+                        <option value="avg_toxicity">Toxicity Score (High to Low)</option>
+                        <option value="avg_bias">Bias Score (High to Low)</option>
+                        <option value="total_posts">Total Posts (High to Low)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="orderBy">Order:</label>
+                    <select id="orderBy">
+                        <option value="desc">Descending (Highest First)</option>
+                        <option value="asc">Ascending (Lowest First)</option>
+                    </select>
+                </div>
+                <button id="applyFilters" class="apply-btn">Apply Filters</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading" style="display: none;">
+                <p>Loading leaderboard...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error" style="display: none;"></div>
+
+            <!-- Leaderboard Table -->
+            <div id="leaderboardContent">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Toxicity Score</th>
+                            <th>Bias Score</th>
+                            <th>Total Posts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="logics/leaderboard.js"></script>
+    <script>
+        function logout() {
+            localStorage.setItem('token', "0");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+
+</html>
