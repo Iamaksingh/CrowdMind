@@ -3,6 +3,8 @@ import User from '../models/User.js';
 import { cloudinary } from '../config/cloudinary.js';
 import Profile from '../models/userProfile.js';
 import OpenAI from "openai";
+import { updateProfileScores } from '../utils/scoringUtils.js';
+import { queueCommentAnalysis } from '../utils/analysisService.js';
 
 const TOXICITY_THRESHOLD = 70;
 const BIAS_THRESHOLD = 70;
@@ -43,19 +45,47 @@ Description: """${description}"""
 
     // Step 2: Check thresholds
     if (toxicity <= TOXICITY_THRESHOLD && bias <= BIAS_THRESHOLD) {
+      // Generate initial summary using Gemini
+      const summaryPrompt = `
+You are summarizing a discussion thread. Generate a concise summary (1-2 sentences) of the following thread title and description.
+Keep it brief and capture the main topic.
+
+Title: """${title}"""
+Description: """${description}"""
+
+Return only the summary as plain text, no JSON.
+`;
+
+      const summaryResponse = await client.chat.completions.create({
+        model: "gemini-2.0-flash",
+        messages: [{ role: "user", content: summaryPrompt }]
+      });
+
+      const initialSummary = summaryResponse.choices[0].message.content.trim();
+
       const newThread = new Thread({
         title,
         description,
         tags: tags ? tags.split(",") : [],
         author: req.user.id,
-        filePath: req.file ? req.file.path : null
+        filePath: req.file ? req.file.path : null,
+        // Store the AI-generated summary
+        summary: initialSummary
       });
       await newThread.save();
+
+      // Update user profile with new scores
+      let profile = await Profile.findOne({ user: req.user.id });
+      if (profile) {
+        profile = updateProfileScores(profile, toxicity, bias);
+        await profile.save();
+      }
 
       return res.status(201).json({
         message: "Thread created successfully",
         thread: newThread,
-        ratings
+        ratings,
+        userScores: profile ? { avg_toxicity: profile.avg_toxicity, avg_bias: profile.avg_bias } : null
       });
     }
 
@@ -205,12 +235,25 @@ Analyze the following comment text and return strict JSON:
 Comment: """${text}"""
 `;
 
-    const ratingResponse = await client.chat.completions.create({
-      model: "gemini-2.0-flash",
-      messages: [{ role: "user", content: ratingPrompt }]
-    });
+    let ratingResponse;
+    try {
+      ratingResponse = await client.chat.completions.create({
+        model: "gemini-2.0-flash",
+        messages: [{ role: "user", content: ratingPrompt }]
+      });
+    } catch (geminiErr) {
+      console.error("Gemini API error during rating:", geminiErr);
+      return res.status(500).json({ msg: "Failed to analyze comment" });
+    }
 
-    const ratings = parseGeminiJSON(ratingResponse.choices[0].message.content);
+    let ratings;
+    try {
+      ratings = parseGeminiJSON(ratingResponse.choices[0].message.content);
+    } catch (parseErr) {
+      console.error("JSON parse error:", parseErr, "Content:", ratingResponse.choices[0].message.content);
+      return res.status(500).json({ msg: "Failed to parse rating response" });
+    }
+
     const { toxicity, bias } = ratings;
 
     // Step 2: Check thresholds
@@ -224,12 +267,51 @@ Comment: """${text}"""
 
       thread.comment_list.push(newComment);
       thread.comments = thread.comment_list.length;
+
+      // Generate recursive summary: Gemini(previous_summary + new_comment)
+      const summaryPrompt = `
+You are summarizing a discussion thread. You have a previous summary and a new comment. 
+Generate a concise updated summary that incorporates the new comment into the existing summary.
+Previous Summary: """${thread.summary || 'No previous summary'}"""
+New Comment: """${text}"""
+
+Return only the new summary as plain text, no JSON.
+`;
+
+      let summaryResponse;
+      let newSummary = thread.summary; // Keep old summary as fallback
+      try {
+        summaryResponse = await client.chat.completions.create({
+          model: "gemini-2.0-flash",
+          messages: [{ role: "user", content: summaryPrompt }]
+        });
+        newSummary = summaryResponse.choices[0].message.content.trim();
+      } catch (summaryErr) {
+        console.error("Gemini API error during summary generation:", summaryErr);
+        // Continue without updating summary if Gemini fails
+      }
+
+      thread.summary = newSummary;
+
       await thread.save();
+
+      // Get the comment index for background analysis
+      const commentIndex = thread.comment_list.length - 1;
+
+      // Update user profile scores
+      const updatedProfile = updateProfileScores(profile, toxicity, bias);
+      await updatedProfile.save();
+
+      // Queue background analysis (non-blocking)
+      queueCommentAnalysis(threadId, commentIndex);
 
       return res.status(201).json({
         message: "Comment added successfully",
         comment: newComment,
-        ratings
+        commentIndex: commentIndex,
+        ratings,
+        threadSummary: thread.summary,
+        userScores: { avg_toxicity: updatedProfile.avg_toxicity, avg_bias: updatedProfile.avg_bias }
       });
     }
 
@@ -247,12 +329,24 @@ Return strict JSON:
 Comment: """${text}"""
 `;
 
-    const moderationResponse = await client.chat.completions.create({
-      model: "gemini-2.0-flash",
-      messages: [{ role: "user", content: moderationPrompt }]
-    });
+    let moderationResponse;
+    try {
+      moderationResponse = await client.chat.completions.create({
+        model: "gemini-2.0-flash",
+        messages: [{ role: "user", content: moderationPrompt }]
+      });
+    } catch (geminiErr) {
+      console.error("Gemini API error during moderation:", geminiErr);
+      return res.status(500).json({ msg: "Failed to moderate comment" });
+    }
 
-    const moderated = parseGeminiJSON(moderationResponse.choices[0].message.content);
+    let moderated;
+    try {
+      moderated = parseGeminiJSON(moderationResponse.choices[0].message.content);
+    } catch (parseErr) {
+      console.error("JSON parse error in moderation:", parseErr);
+      return res.status(500).json({ msg: "Failed to parse moderation response" });
+    }
 
     res.status(200).json({
       message: "moderate this statement to remove bias and toxicity",
@@ -261,7 +355,7 @@ Comment: """${text}"""
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Unexpected error in addComment:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
@@ -296,5 +390,38 @@ export const like_unlike = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ==================== COMMENT ANALYSIS ====================
+export const getCommentAnalysis = async (req, res) => {
+  try {
+    const { threadId, commentIndex } = req.params;
+
+    const thread = await Thread.findById(threadId);
+    if (!thread) return res.status(404).json({ msg: "Thread not found" });
+
+    if (commentIndex < 0 || commentIndex >= thread.comment_list.length) {
+      return res.status(404).json({ msg: "Comment not found" });
+    }
+
+    const comment = thread.comment_list[commentIndex];
+    const analysis = comment.analysis || {};
+
+    res.json({
+      commentIndex,
+      analysis: {
+        relevance_score: analysis.relevance_score,
+        relevance_status: analysis.relevance_status || 'pending',
+        fact_check_status: analysis.fact_check_status || 'pending',
+        has_factual_claims: analysis.has_factual_claims,
+        factual_accuracy: analysis.factual_accuracy,
+        analysis_notes: analysis.analysis_notes || ''
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
   }
 };
