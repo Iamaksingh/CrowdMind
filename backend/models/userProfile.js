@@ -34,7 +34,14 @@ const profileSchema = new mongoose.Schema({
     linkedin: { type: String, default: '' },
     github: { type: String, default: '' },
   },
-  avatar: { type: String, default: '' } 
+  avatar: { type: String, default: '' },
+  // Leaderboard scores: running average based on all user's posts/comments
+  toxicity_score: { type: Number, default: 0 },
+  bias_score: { type: Number, default: 0 },
+  // Aggregate stats for leaderboard display
+  total_posts: { type: Number, default: 0 },
+  avg_toxicity: { type: Number, default: 0 },
+  avg_bias: { type: Number, default: 0 }
 }, { timestamps: true });
 
 const Profile = mongoose.model('Profile', profileSchema);
