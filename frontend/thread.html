@@ -28,23 +28,50 @@
         <button onclick="window.location.href='landing.html'">𖠿 Home</button>
         <button onclick="window.location.href='new_thread.html'">🧵New Thread</button>
         <button onclick="window.location.href='mythreads.html'">🪡My Thread</button>
+        <button onclick="window.location.href='leaderboard.html'">📊 Leaderboard</button>
         <button onclick="window.location.href='profile.html'">👨🏻‍💼 Profile</button>
         <button onclick="logout()">🔑Logout</button>
     </div>
 
     <div class="main-content">
-        <div class="thread-details">
-            <h2 id="thread-title">Thread Title</h2>
-            <p id="thread-description">This is the thread description...</p>
-            <p><strong>Tags:</strong> <span id="tags">General</span></p>
+        <div class="thread-container">
+            <!-- Left Column: Thread Details & Comment Input -->
+            <div class="thread-left">
+                <div class="thread-details">
+                    <h2 id="thread-title">Thread Title</h2>
+                    <p id="thread-description">This is the thread description...</p>
+                    <p><strong>Tags:</strong> <span id="tags">General</span></p>
+                    
+                    <!-- Thread Summary Section -->
+                    <div class="thread-summary-section">
+                        <h3>Discussion Summary</h3>
+                        <div id="thread-summary" class="summary-content">
+                            <p id="summary-text">No summary available yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Comment Section -->
+                <div class="add-comment">
+                    <h3>Share Your Thoughts</h3>
+                    <textarea id="comment-input" placeholder="Write your comment..."></textarea>
+                    <button onclick="addComment()">Post Comment</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Comments -->
+            <div class="thread-right">
+                <div class="comments-header">
+                    <h3>Discussion</h3>
+                    <span class="comment-count" id="comment-count">0</span>
+                </div>
+                <div class="comments" id="comments-container">
+                    <p class="no-comments">No comments yet. Be the first to comment!</p>
+                </div>
+            </div>
         </div>
-        <div class="comments" id="comments-container">
-        </div>
-        <div class="add-comment">
-            <textarea id="comment-input" placeholder="Write your comment..."></textarea>
-            <button onclick="addComment()">Post Comment</button>
-        </div>
-        <!-- Toast container (already in HTML) -->
+        
+        <!-- Toast container -->
         <div id="toastContainer"></div>
     </div>
     <script>
