@@ -72,3 +72,42 @@ export const upsertProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Get leaderboard sorted by toxicity and bias scores
+export const getLeaderboard = async (req, res) => {
+  try {
+    const { sortBy = 'avg_toxicity', limit = 50, order = 'desc', includeInactive = 'false' } = req.query;
+
+    const sortOrder = order === 'asc' ? 1 : -1;
+    const allowedSortFields = ['avg_toxicity', 'avg_bias', 'total_posts'];
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'avg_toxicity';
+
+    // If includeInactive is true, show all profiles; otherwise only show users with posts
+    const query = includeInactive === 'true' ? {} : { total_posts: { $gt: 0 } };
+
+    let leaderboard = await Profile.find(query)
+      .select('username avatar avg_toxicity avg_bias total_posts')
+      .sort({ [sortField]: sortOrder })
+      .limit(parseInt(limit, 10))
+      .lean();
+
+    // Ensure all fields have valid values (not undefined)
+    leaderboard = leaderboard.map(user => ({
+      username: user.username || 'Anonymous',
+      avatar: user.avatar || '',
+      avg_toxicity: user.avg_toxicity || 0,
+      avg_bias: user.avg_bias || 0,
+      total_posts: user.total_posts || 0
+    }));
+
+    res.json({
+      leaderboard,
+      sortedBy: sortField,
+      order: order === 'asc' ? 'ascending' : 'descending',
+      totalCount: leaderboard.length
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
