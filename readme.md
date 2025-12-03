@@ -193,7 +193,7 @@ analysis: {
 ### How It Works
 - Every post (thread) or comment generates toxicity/bias scores (1-100 scale)
 - Scores are stored in `Profile` as running averages: `avg_toxicity`, `avg_bias`
-- **Running Average Formula**: $\frac{(\text{previous\_avg} \times \text{count}) + \text{new\_score}}{\text{count} + 1}$
+- **Running Average Formula**: new_avg= ( (previous_avg×count) + new_score​ ) / ( count + 1 )
 - Users with higher toxicity/bias scores appear higher on leaderboard (if sorted descending)
 - `total_posts` tracks count of all contributions (threads + comments)
 
