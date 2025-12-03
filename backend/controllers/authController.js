@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Profile from '../models/userProfile.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
@@ -15,6 +16,29 @@ export const signup = async (req, res) => {
     }
 
     const user = await User.create({ email, password });
+
+    // Auto-create profile with default username based on email
+    const defaultUsername = email.split('@')[0] + '_' + Math.random().toString(36).substring(7);
+    
+    try {
+      await Profile.create({
+        user: user._id,
+        username: defaultUsername,
+        avatar: '',
+        bio: '',
+        location: '',
+        website: '',
+        socialLinks: {},
+        total_posts: 0,
+        avg_toxicity: 0,
+        avg_bias: 0,
+        toxicity_score: 0,
+        bias_score: 0
+      });
+    } catch (profileErr) {
+      console.error('Error creating profile:', profileErr);
+      // Continue even if profile creation fails
+    }
 
     return res.status(201).json({
       user: { id: user._id, email: user.email },
