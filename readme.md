@@ -1,5 +1,3 @@
-# Copilot Instructions for CrowdMind
-
 ## Project Overview
 **CrowdMind** is a full-stack discussion platform featuring AI-powered moderation and intelligent comment analysis. Users create and discuss threads with automatic toxicity/bias detection, relevance checking, and fact-verification powered by Google's Gemini API.
 
