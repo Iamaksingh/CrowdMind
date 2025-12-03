@@ -32,12 +32,44 @@ function createThreadElement(thread, likedByUser = false) {
     threadDiv.classList.add("thread");
     threadDiv.setAttribute("data-id", thread._id);
 
+    // Truncate summary
+    const summary = thread.summary || thread.description || "No summary available";
+    const truncatedSummary = summary.length > 200 ? summary.substring(0, 200) + "..." : summary;
+
     threadDiv.innerHTML = `
         <a href="thread.html?id=${thread._id}" class="thread-link">
-            <div class="thread-title">${thread.title}</div>
-            <div class="thread-content">${thread.description || ""}</div>
-            ${thread.filePath ? `<img src="${thread.filePath}" class="thread-image" alt="Thread Image">` : ""}
+            <div class="thread-card-container">
+                
+                <!-- Left: Image -->
+                <div class="thread-image-section">
+                    ${thread.filePath
+                        ? `<img src="${thread.filePath}" class="thread-image" alt="Thread Image"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%23e0e0e0%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%22550%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2216%22 fill=%22%23999%22%3EImage unavailable%3C/text%3E%3C/svg%3E'">`
+                        : `<div class="thread-image-placeholder">📸</div>`
+                    }
+                </div>
+                
+                <!-- Right: Content -->
+                <div class="thread-content-section">
+                    <div class="thread-title">${thread.title}</div>
+                    <div class="thread-description">${thread.description || ""}</div>
+
+                    <div class="thread-summary-box">
+                        <h4>Summary</h4>
+                        <p>${truncatedSummary}</p>
+                    </div>
+
+                    <div class="thread-tags">
+                        ${thread.tags && thread.tags.length > 0 
+                            ? thread.tags.map(tag => `<span class="tag">${tag}</span>`).join('')
+                            : `<span class="tag">General</span>`
+                        }
+                    </div>
+                </div>
+
+            </div>
         </a>
+
         <div class="thread-meta">
             <div class="thread-actions">
                 <span class="like-btn">${likedByUser ? '❤️' : '🤍'} ${thread.likes ?? 0}</span>
@@ -54,10 +86,10 @@ function createThreadElement(thread, likedByUser = false) {
         </div>
     `;
 
-    // Like button logic
+    /* LIKE BUTTON LOGIC */
     const likeBtn = threadDiv.querySelector(".like-btn");
     likeBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
+        e.preventDefault();   // prevent redirect to thread
         try {
             const res = await fetch(`${BaseURL}/threads/${thread._id}/like`, {
                 method: "POST",
@@ -70,16 +102,15 @@ function createThreadElement(thread, likedByUser = false) {
         }
     });
 
-    // Delete slider logic
+    /* DELETE SLIDER LOGIC */
     const handle = threadDiv.querySelector(".delete-slider-handle");
     const track = threadDiv.querySelector(".delete-slider-track");
-    let isDragging = false;
-    let startX = 0, handleWidth = 0, trackWidth = 0, currentX = 0;
+    let dragging = false, startX = 0, handleWidth = 0, trackWidth = 0, currentX = 0;
     const confirmZoneFactor = 0.9;
 
     function startDrag(e) {
         e.preventDefault();
-        isDragging = true;
+        dragging = true;
         startX = e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
         handleWidth = handle.offsetWidth;
         trackWidth = track.offsetWidth;
@@ -90,24 +121,19 @@ function createThreadElement(thread, likedByUser = false) {
     }
 
     function onDrag(e) {
-        if (!isDragging) return;
+        if (!dragging) return;
         const clientX = e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
-        let delta = clientX - startX;
-        delta = Math.max(0, Math.min(delta, trackWidth - handleWidth));
+        let delta = Math.max(0, Math.min(clientX - startX, trackWidth - handleWidth));
         currentX = delta;
         handle.style.transform = `translateX(${delta}px)`;
-
-        // Confirm zone color
-        if (delta >= (trackWidth - handleWidth) * confirmZoneFactor) {
-            track.classList.add("confirm");
-        } else {
-            track.classList.remove("confirm");
-        }
+        delta >= (trackWidth - handleWidth) * confirmZoneFactor
+            ? track.classList.add("confirm")
+            : track.classList.remove("confirm");
     }
 
     function stopDrag() {
-        if (!isDragging) return;
-        isDragging = false;
+        if (!dragging) return;
+        dragging = false;
         document.removeEventListener("mousemove", onDrag);
         document.removeEventListener("touchmove", onDrag);
         document.removeEventListener("mouseup", stopDrag);
