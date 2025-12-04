@@ -62,11 +62,11 @@ Or if moderation required:
 #### 3. Comment Interactions ([`threadController.js::addComment`](backend/controllers/threadController.js))
 
 **Flow**:
-1. **Toxicity/Bias Check**: Analyze comment text (1-100 scale)
+1. **Toxicity/Bias Check**: Analyze comment text via Gemini (1-100 scale)
 2. **Threshold Check**: If toxicity ≤ 70 AND bias ≤ 70 → proceed, else request moderation
 3. **Summary Update**: Call Gemini to merge previous summary with new comment (recursive summary)
 4. **Profile Scoring**: Update user profile with new toxicity/bias averages
-5. **Background Analysis**: Queue async analysis (relevance + fact-check) with 500ms delay
+5. **Background Analysis**: Queue comment for batch analysis (non-blocking)
 
 **Response**:
 ```json
@@ -82,20 +82,24 @@ Or if moderation required:
 
 ---
 
-## Feature: Comment Analysis & Relevance Checking
+## Feature: Batch Comment Analysis & Relevance Checking
 
 ### How It Works
 
-Each comment undergoes **asynchronous analysis** in the background without blocking the API response:
+Each comment undergoes **asynchronous batch analysis** in the background without blocking the API response:
 
-1. **Fire-and-Forget Queue**: Comment is posted immediately (if safe), analysis starts 500ms later
-2. **Parallel Analysis**: Relevance scoring + fact-checking run simultaneously
-3. **Frontend Polling**: Browser polls `/api/threads/:threadId/comments/:commentIndex/analysis` until completion
-4. **Badge Display**: Once complete, relevance + fact-check badges render on the comment
+1. **Queue-Based System**: Comments are queued immediately upon posting (if safe), stored in Redis or in-memory
+2. **Batch Processing**: Background processor checks queues every 10 seconds and triggers batch when:
+   - Queue size ≥ 5 comments, OR
+   - Oldest comment in queue > 1 hour old
+3. **Batch Analysis**: All queued comments for a thread sent to Gemini in single request (cost-efficient)
+4. **Results Storage**: Analysis results stored directly in `thread.comment_list[i].analysis`
+5. **Frontend Polling**: Browser polls `/api/threads/:threadId/comments/:commentIndex/analysis` until completion
+6. **Badge Display**: Once complete, relevance + fact-check badges render on the comment
 
 ### Analysis Components
 
-#### A. Relevance Checking ([`analysisService.js::checkRelevance()`](backend/utils/analysisService.js))
+#### A. Relevance Checking
 
 **What it does**: Evaluates if a comment is on-topic and contributes to the thread discussion
 
@@ -113,9 +117,7 @@ Each comment undergoes **asynchronous analysis** in the background without block
 🔴 Low Relevance (0–30) → Red badge
 ```
 
-**Implementation**: Uses Gemini to analyze thread title/summary + comment text, outputs relevance score and reason
-
-#### B. Fact-Checking ([`analysisService.js::factCheckComment()`](backend/utils/analysisService.js))
+#### B. Fact-Checking
 
 **What it does**: Detects factual claims and evaluates their accuracy
 
@@ -123,7 +125,7 @@ Each comment undergoes **asynchronous analysis** in the background without block
 - **"verified"**: Claim is widely known and accurate ✅
 - **"disputed"**: Claim contradicts widely accepted facts ❌
 - **"unverifiable"**: Insufficient information to verify ❓
-- **"No factual claims"**: Comment is opinion-based only 💬
+- **"Opinion"**: Comment is opinion-based, no factual claims 💬
 
 **Frontend Display**:
 ```
@@ -133,56 +135,70 @@ Each comment undergoes **asynchronous analysis** in the background without block
 💬 Opinion       → Blue badge "Opinion"
 ```
 
-**Implementation**: Uses Gemini to:
-1. Detect if comment contains specific claims (dates, stats, names, sources)
-2. Evaluate against common world knowledge
-3. Return findings + flagged claims
-
-**Example Response**:
+**Example Gemini Response**:
 ```json
 {
+  "relevance_score": 85,
   "has_factual_claims": true,
-  "factual_accuracy": "disputed",
-  "findings": "The claim about Earth's population is outdated; current estimates are higher.",
-  "flags": ["Earth population claim"]
+  "factual_accuracy": "disputed"
 }
 ```
 
 ### Analysis Schema ([`Thread.js`](backend/models/Thread.js))
 
-Each comment stores analysis results:
+Each comment stores analysis results in the `analysis` object:
 ```javascript
 analysis: {
-  relevance_score: Number,           // 1-100, null = not analyzed
-  relevance_status: String,          // 'pending', 'completed', 'failed'
-  fact_check_status: String,         // 'pending', 'completed', 'failed'
-  has_factual_claims: Boolean,       // true if claims detected
-  factual_accuracy: String,          // 'verified', 'disputed', 'unverifiable'
-  analysis_notes: String             // Combined findings + flags
+  relevance_score: Number,           // 1-100, null until batch processed
+  relevance_status: String,          // 'pending' or 'completed'
+  fact_check_status: String,         // 'pending' or 'completed'
+  has_factual_claims: Boolean,       // true if factual claims detected
+  factual_accuracy: String,          // 'verified', 'disputed', 'unverifiable', 'opinion'
+  analysis_notes: String             // Additional context or findings
 }
 ```
 
 ### Implementation Details
 
-**Backend Flow** ([`analysisService.js`](backend/utils/analysisService.js)):
-1. [`queueCommentAnalysis(threadId, commentIndex)`](backend/utils/analysisService.js) - Fire-and-forget with 500ms delay
-2. [`analyzeCommentInBackground()`](backend/utils/analysisService.js) - Runs async, updates thread document with results
-3. Both checks run in parallel via `Promise.all()`
-4. On error, `analysis_status` set to 'failed', analysis_notes explain failure
+**Queue System** ([`commentQueueService.js`](backend/utils/commentQueueService.js)):
+- **`addToQueue(threadId, commentIndex, commentText)`**: Adds comment to Redis (or in-memory fallback)
+- **`shouldTriggerBatch(threadId)`**: Checks if batch should process (size ≥ 5 OR oldest > 1 hour)
+- **`processBatch(threadId)`**: Fetches all queued comments, sends to Gemini, stores results, clears queue
+- **`startBatchProcessor()`**: Runs every 10 seconds, checks all active queues
+- **`flushAllQueues()`**: Called on graceful shutdown, ensures no comments lost
+
+**Backend Flow** ([`threadController.js::addComment`](backend/controllers/threadController.js)):
+1. Comment posted and saved to thread immediately
+2. Comment queued via `addToQueue()` (non-blocking)
+3. Returns with `commentIndex` and `relevance_status: 'pending'`
+4. Background processor picks up comment in batch (within 10s-1h depending on queue size)
+5. Gemini analyzes all comments in batch in single API call
+6. Results stored in `thread.comment_list[i].analysis`
 
 **Frontend Flow** ([`thread.js`](frontend/logics/thread.js)):
-1. Comment posted, response includes `commentIndex` + analysis with `relevance_status: 'pending'`
-2. [`pollCommentAnalysis(commentIndex)`](frontend/logics/thread.js) called, polls every 500ms
-3. Once `relevance_status === 'completed'`, call [`displayCommentAnalysisBadges()`](frontend/logics/thread.js)
-4. Badges render: `<span class="badge badge-relevance badge-high">High Relevance</span>`
+1. Comment posted, immediately shows in UI with "analyzing..." indicator
+2. `pollCommentAnalysis(commentIndex)` called, polls every 500ms (max 20 retries = 10 seconds)
+3. Endpoint: `GET /api/threads/:threadId/comments/:commentIndex/analysis`
+4. Once `relevance_status === 'completed'`, displays badges with scores
+5. `activePolls` Map prevents duplicate polling for same comment
 
 **Badge Styling** ([`thread.css`](frontend/stylesheets/thread.css)):
 ```css
 .badge-relevance.badge-high { background: #d4edda; color: #155724; }
+.badge-relevance.badge-medium { background: #fff3cd; color: #856404; }
+.badge-relevance.badge-low { background: #f8d7da; color: #721c24; }
+
 .badge-factcheck.badge-verified { background: #d4edda; color: #155724; border-left: 3px solid #28a745; }
 .badge-factcheck.badge-disputed { background: #f8d7da; color: #721c24; border-left: 3px solid #dc3545; }
 .badge-factcheck.badge-opinion { background: #eef6f1; color: #2c7a4b; border-left: 3px solid #8fd19e; }
+.badge-factcheck.badge-unverifiable { background: #fff3cd; color: #856404; border-left: 3px solid #ffc107; }
 ```
+
+**Redis vs In-Memory Fallback**:
+- **Redis Enabled**: Uses Upstash REST API (serverless-safe), persists across restarts
+- **Redis Disabled**: Falls back to in-memory Map (single-process only, lost on restart)
+- **Error Handling**: If Gemini fails, queue is retained and retried; on parse error, queue is cleared
+- **Data Integrity**: Results stored directly in MongoDB thread document via `.save()`
 
 ---
 
