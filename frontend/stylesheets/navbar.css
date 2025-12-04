@@ -1,14 +1,13 @@
 :root {
     --nav-width: 15%;
-    --nav-bg-start: #fbfbff;
-    --nav-bg-end: #f2f4fb;
-    --primary-start: #667eea;
-    --primary-end: #764ba2;
+    --nav-bg-start: #fbfbff; /* very light lavender */
+    --nav-bg-end: #f2f4fb;   /* soft off-white */
+    --primary-start: #667eea; /* gradient start (used elsewhere) */
+    --primary-end: #764ba2;   /* gradient end */
     --accent-teal: #1abc9c;
     --button-text: #2c3e50;
 }
 
-/* ---- BASE SIDEBAR ---- */
 .sidebar {
     width: var(--nav-width);
     background: linear-gradient(180deg, var(--nav-bg-start), var(--nav-bg-end));
@@ -17,171 +16,197 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 14px;
     box-shadow: 0 6px 18px rgba(20,20,30,0.04);
     border-right: 1px solid rgba(20,20,30,0.04);
 }
 
-@media (min-width: 1024px) {
-    .sidebar {
-        justify-content: center !important;
-    }
-}
-
-/* Logo */
 .logo {
     width: 80%;
     max-width: 120px;
     margin-bottom: 14px;
     border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(102,126,234,0.04);
     background: transparent;
     padding: 4px;
-    box-shadow: 0 6px 18px rgba(102,126,234,0.04);
 }
 
-/* Buttons (white globally) */
 .sidebar button {
-    background: #ffffff;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
     color: var(--button-text);
-    border: 1px solid rgba(102,126,234,0.12);
+    border: none;
     padding: 10px 20px;
     border-radius: 10px;
     cursor: pointer;
     text-align: center;
     width: 80%;
     max-width: 150px;
-    transition: 0.18s ease;
-    box-shadow: 0 4px 12px rgba(102,126,234,0.08);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.18);
 }
 
-/* Hover */
 .sidebar button:hover {
-    background: linear-gradient(135deg, rgba(102,126,234,0.10), rgba(118,75,162,0.10));
-    box-shadow: 0 8px 22px rgba(102,126,234,0.10);
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 26px rgba(102,126,234,0.22);
+    background: linear-gradient(135deg, var(--accent-teal), #16a085);
 }
 
-/* Focus */
 .sidebar button:focus {
-    outline: 2px solid rgba(102,126,234,0.20);
+    outline: 3px solid rgba(118,75,162,0.16);
     outline-offset: 2px;
 }
+/* Responsive Design for Navbar */
 
-/* ---- RESPONSIVE ---- */
-
-/* Large desktop 1200px+ (sidebar stays left, just shrink slightly) */
+/* Large Screens (1200px and above) - Keep vertical sidebar */
 @media (min-width: 1200px) {
+    .sidebar button {
+        background: #ffffff;
+        color: var(--button-text);
+        border: 1px solid rgba(102,126,234,0.12);
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        width: 80%;
+        max-width: 150px;
+        transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+        box-shadow: 0 3px 10px rgba(102,126,234,0.06);
+    }
+    .sidebar button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102,126,234,0.06);
+        background: linear-gradient(135deg, rgba(102,126,234,0.10), rgba(118,75,162,0.10));
+    }
+    .sidebar button:focus {
+        outline: 2px solid rgba(102,126,234,0.12);
+        outline-offset: 2px;
+    }
+/* Medium Screens (1024px - 1199px) - Keep vertical sidebar */
+@media (max-width: 1199px) and (min-width: 1024px) {
     .sidebar {
         width: 16%;
+        padding: 15px;
+        gap: 12px;
+        flex-direction: column;
+    }
+    
+    .logo {
+        width: 80%;
+        max-width: 110px;
+        margin-bottom: 15px;
+    }
+    
+    .sidebar button {
+        padding: 8px 15px;
+        width: 85%;
+        max-width: 130px;
+        font-size: 12px;
+        border-radius: 4px;
     }
 }
 
-/* Tablet landscape — switch to top navbar */
-@media (max-width: 1023px) {
+/* Tablet Landscape (768px - 1023px) - Switch to horizontal one line */
+@media (max-width: 1023px) and (min-width: 768px) {
     .sidebar {
         width: 100%;
-        height: 65px;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
+        height: auto;
         padding: 10px;
         gap: 8px;
-        overflow-x: auto;
-        box-shadow: 0 4px 14px rgba(20,20,30,0.05);
-        border-right: none;
-        border-bottom: 1px solid rgba(20,20,30,0.04);
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
     }
-
+    
     .logo {
-        width: 45px;
-        max-width: 45px;
-        min-width: 45px;
+        width: auto;
+        max-width: 80px;
+        min-width: 70px;
         margin-bottom: 0;
         flex-shrink: 0;
     }
-
+    
     .sidebar button {
+        padding: 6px 10px;
         width: auto;
-        min-width: 85px;
-        max-width: none;
-        padding: 7px 10px;
-        font-size: 13px;
-        border-radius: 8px;
+        max-width: 100px;
+        min-width: 80px;
+        font-size: 11px;
+        border-radius: 3px;
+        flex-shrink: 0;
         white-space: nowrap;
     }
-
-    .main-content {
-        margin-top: 75px;
-    }
 }
 
-@media (max-width: 900px) {
-    .sidebar button .label {
-        display: none;
-    }
-}
-
-@media (max-width: 780px) {
+/* Tablet Portrait (481px - 767px) - Horizontal one line */
+@media (max-width: 767px) and (min-width: 481px) {
     .sidebar {
-        justify-content: center;
-        gap: 14px; /* nice spacing */
-    }
-
-    .sidebar button .label {
-        display: none;
-    }
-
-    .sidebar button {
+        width: 100%;
+        height: auto;
         padding: 8px;
-        min-width: 48px;
-        max-width: 55px;
-        font-size: 15px; /* emoji/icon size */
-        border-radius: 8px;
-    }
-}
-
-/* Mobile — same as tablet but more compact */
-@media (max-width: 600px) {
-    .sidebar button {
-        min-width: 70px;
-        font-size: 11px;
-        padding: 6px 8px;
-        border-radius: 7px;
-    }
-}
-
-@media (max-width: 560px) {
-    .sidebar {
-        justify-content: center;
-        gap: 10px;
-    }
-    .sidebar button {
-        padding: 6px;
-        min-width: 40px;
-        max-width: 45px;
-        font-size: 14px; /* smaller emoji */
-        border-radius: 7px;
-    }
-}
-
-@media (max-width: 420px) {
-    .sidebar {
-        justify-content: center;
         gap: 6px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto;
     }
+    
+    .logo {
+        width: auto;
+        max-width: 60px;
+        min-width: 50px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    
     .sidebar button {
-        padding: 4px;
-        min-width: 34px;
-        max-width: 38px;
-        font-size: 13px;
-        border-radius: 6px;
+        padding: 5px 8px;
+        width: auto;
+        max-width: 80px;
+        min-width: 65px;
+        font-size: 10px;
+        border-radius: 3px;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+}
+
+/* Mobile Screens (480px and below) - Horizontal one line */
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 6px;
+        gap: 4px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto;
+    }
+    
+    .logo {
+        width: auto;
+        max-width: 45px;
+        min-width: 40px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    
+    .sidebar button {
+        padding: 4px 6px;
+        width: auto;
+        max-width: 65px;
+        min-width: 55px;
+        font-size: 9px;
+        border-radius: 3px;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    
+    .sidebar button:hover {
+        transform: scale(1.05);
     }
 }

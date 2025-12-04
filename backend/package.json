@@ -25,7 +25,8 @@
     "mongoose": "^8.17.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "openai": "^5.12.2"
+    "openai": "^5.12.2",
+    "redis": "^4.7.1"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",

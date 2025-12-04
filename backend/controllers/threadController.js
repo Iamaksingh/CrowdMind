@@ -4,7 +4,7 @@ import { cloudinary } from '../config/cloudinary.js';
 import Profile from '../models/userProfile.js';
 import OpenAI from "openai";
 import { updateProfileScores } from '../utils/scoringUtils.js';
-import { queueCommentAnalysis } from '../utils/analysisService.js';
+import { addToQueue } from '../utils/commentQueueService.js';
 
 const TOXICITY_THRESHOLD = 70;
 const BIAS_THRESHOLD = 70;
@@ -272,6 +272,8 @@ Comment: """${text}"""
       const summaryPrompt = `
 You are summarizing a discussion thread. You have a previous summary and a new comment. 
 Generate a concise updated summary that incorporates the new comment into the existing summary.
+Keep it brief (2-3 sentences).
+
 Previous Summary: """${thread.summary || 'No previous summary'}"""
 New Comment: """${text}"""
 
@@ -302,8 +304,8 @@ Return only the new summary as plain text, no JSON.
       const updatedProfile = updateProfileScores(profile, toxicity, bias);
       await updatedProfile.save();
 
-      // Queue background analysis (non-blocking)
-      queueCommentAnalysis(threadId, commentIndex);
+      // Queue comment for batch analysis (non-blocking)
+      await addToQueue(threadId, commentIndex, text);
 
       return res.status(201).json({
         message: "Comment added successfully",

@@ -1,16 +1,20 @@
-/* Scrollbar theme */
+/* Custom site-themed scrollbar styles
+   - Matches the site's primary purple gradient and teal accents
+   - Global defaults, plus container-specific overrides for the dark sidebar
+*/
+
 :root {
     --scrollbar-width: 10px;
     --scrollbar-track-bg: rgba(0, 0, 0, 0.04);
-    --scrollbar-thumb-start: #667eea;
-    --scrollbar-thumb-end: #764ba2;
+    --scrollbar-thumb-start: #667eea; /* primary button start */
+    --scrollbar-thumb-end: #764ba2;   /* primary button end */
     --scrollbar-thumb-hover-start: #5b63d9;
     --scrollbar-thumb-hover-end: #5a2f8f;
-    --scrollbar-sidebar-start: #1abc9c;
+    --scrollbar-sidebar-start: #1abc9c; /* teal accent */
     --scrollbar-sidebar-end: #16a085;
 }
 
-/* Global scrollbar (WebKit) */
+/* WebKit browsers (Chrome, Edge, Safari) */
 *::-webkit-scrollbar {
     width: var(--scrollbar-width);
     height: var(--scrollbar-width);
@@ -29,21 +33,101 @@
     background: linear-gradient(180deg, var(--scrollbar-thumb-hover-start), var(--scrollbar-thumb-hover-end));
 }
 
-/* Comments + thread sections use softer purple */
+/* Container-specific: dark sidebar should use teal thumb for contrast */
+.sidebar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--scrollbar-sidebar-start), var(--scrollbar-sidebar-end));
+    border: 3px solid rgba(255,255,255,0.06);
+}
+.sidebar {
+    scrollbar-color: rgba(26,188,156,0.9) transparent; /* Firefox */
+}
+
+/* Comments and left-thread panes use a softer purple thumb */
 .comments::-webkit-scrollbar-thumb,
 .thread-left::-webkit-scrollbar-thumb,
 .thread-right::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, rgba(102,126,234,0.9), rgba(118,75,162,0.9));
     border: 2px solid rgba(255,255,255,0.8);
 }
-
-/* Firefox fallback */
-* {
-    scrollbar-width: thin;
+.comments, .thread-left, .thread-right {
     scrollbar-color: rgba(102,126,234,0.9) transparent;
 }
 
-/* Focus accessibility */
+/* Firefox global fallback */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: linear-gradient(180deg, var(--scrollbar-thumb-start), var(--scrollbar-thumb-end)) transparent;
+}
+
+/* Accessibility: small focus outline offset */
 :focus-visible {
     outline-offset: 2px;
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0;
+        width: 100% !important;
+        height: 60px !important;
+        flex-direction: row !important;
+        justify-content: center;
+        /* align logo left, buttons right */
+        align-items: center;
+        padding: 10px;
+        gap: 10px;
+        z-index: 1000 !important;
+        background: linear-gradient(180deg, var(--nav-bg-start, #fbfbff), var(--nav-bg-end, #f2f4fb));
+        position: fixed;
+    }
+
+    /* Small logo on the left */
+    .sidebar .logo {
+        width: 40px;
+        max-width: 40px;
+        margin: 0;
+        border-radius: 8px;
+    }
+
+    /* Wrap buttons in a flex container to push them right */
+    .sidebar .nav-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex: 1;
+        /* take remaining space */
+        gap: 10px;
+    }
+
+    .sidebar button {
+        width: auto;
+        /* Don't stretch full width */
+        padding: 8px 12px;
+        /* Smaller padding */
+        font-size: 14px;
+        /* Smaller text */
+        border-radius: 8px;
+        /* Slightly rounded */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+        /* Keep touch-friendly */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        /* Soft shadow */
+        margin: 5px auto;
+        /* Space between buttons */
+    }
+
+    .sidebar button:hover {
+        /* use subtle themed hover instead of strong teal */
+        background: linear-gradient(135deg, rgba(102,126,234,0.12), rgba(118,75,162,0.12));
+        transform: scale(1.05);
+    }
+
+    /* Push content down so it doesn't overlap navbar */
+    .main-content {
+        margin-top: 60px;
+    }
 }

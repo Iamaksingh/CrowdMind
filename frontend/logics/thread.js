@@ -83,11 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Display analysis badges on comment
     function displayCommentAnalysisBadges(commentIndex, analysis) {
-        // Find comment element by index
-        const commentElements = document.querySelectorAll('.comment');
-        if (commentIndex >= commentElements.length) return;
+        // Find comment element by its original index attribute so display order
+        // changes don't break badge updates.
+        const commentElement = document.querySelector(`.comment[data-comment-index="${commentIndex}"]`);
+        if (!commentElement) return;
 
-        const commentElement = commentElements[commentIndex];
         let badgesContainer = commentElement.querySelector('.comment-analysis-badges');
 
         if (!badgesContainer) {
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let badgesHTML = '';
 
         // Relevance badge
-        if (analysis.relevance_score !== null) {
+        if (analysis.relevance_score !== null && analysis.relevance_score !== undefined) {
             const relevanceClass = analysis.relevance_score >= 70 ? 'high' : 
                                  analysis.relevance_score >= 40 ? 'medium' : 'low';
             badgesHTML += `<span class="badge badge-relevance badge-${relevanceClass}" title="Relevance to thread: ${analysis.relevance_score}%">
@@ -176,19 +176,33 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    // Render comments
+    // Render comments. Do not mutate DB order — display a relevance-sorted copy
+    // while preserving original indices for polling and analysis lookups.
     function renderComments(comments) {
         if (!comments || comments.length === 0) {
             commentsContainer.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
             commentCount.textContent = "0";
             return;
         }
+
         commentsContainer.innerHTML = "";
         commentCount.textContent = comments.length;
-        comments.forEach((comment, commentIndex) => {
+
+        // Create a display copy that keeps original indices
+        const commentsWithIndex = comments.map((c, idx) => ({ comment: c, originalIndex: idx }));
+
+        // Sort the display copy by relevance_score descending (treat missing as 0)
+        commentsWithIndex.sort((a, b) => {
+            const aScore = a.comment.analysis?.relevance_score ?? 0;
+            const bScore = b.comment.analysis?.relevance_score ?? 0;
+            return bScore - aScore;
+        });
+
+        // Render using originalIndex so server-side comment indices remain valid
+        commentsWithIndex.forEach(({ comment, originalIndex }) => {
             const commentDiv = document.createElement("div");
             commentDiv.classList.add("comment");
-            commentDiv.dataset.commentIndex = commentIndex;
+            commentDiv.dataset.commentIndex = originalIndex;
 
             commentDiv.innerHTML = `
                 <img src="${comment.avatar}" alt="${comment.username} Avatar" class="comment-avatar">
@@ -203,10 +217,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Start polling for analysis if comment has analysis field with pending status
             if (comment.analysis && (comment.analysis.relevance_status === 'pending' || comment.analysis.fact_check_status === 'pending')) {
-                pollCommentAnalysis(commentIndex);
+                // Show an immediate 'Pending' badge while analysis runs
+                const badgesContainer = commentDiv.querySelector('.comment-analysis-badges');
+                if (badgesContainer) {
+                    badgesContainer.innerHTML = `<span class="badge badge-pending" title="Analysis pending">⏳ Analysis pending</span>`;
+                }
+
+                pollCommentAnalysis(originalIndex);
             } else if (comment.analysis && comment.analysis.relevance_status === 'completed') {
                 // Analysis already complete - display badges immediately
-                displayCommentAnalysisBadges(commentIndex, comment.analysis);
+                displayCommentAnalysisBadges(originalIndex, comment.analysis);
             }
         });
     }
