@@ -111,7 +111,9 @@ export const shouldTriggerBatch = async (threadId) => {
       }
       
       if (oldestEntry) {
-        const { timestamp } = JSON.parse(oldestEntry);
+        // Upstash Redis REST returns parsed objects; in-memory returns strings
+        const parsedEntry = typeof oldestEntry === 'string' ? JSON.parse(oldestEntry) : oldestEntry;
+        const { timestamp } = parsedEntry;
         const age = Date.now() - timestamp;
 
         if (age > BATCH_TIMEOUT_MS) {
