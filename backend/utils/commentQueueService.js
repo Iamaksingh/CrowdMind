@@ -1,4 +1,4 @@
-import redisClient from '../config/redis.js';
+import { redis, isRedisEnabled } from '../config/redis.js';
 import Thread from '../models/Thread.js';
 import OpenAI from 'openai';
 
@@ -11,6 +11,9 @@ const client = new OpenAI({
 const BATCH_SIZE = 5;
 const BATCH_TIMEOUT_MS = 1 * 60 * 1000; // 1 minute
 
+// In-memory fallback queue
+const inMemoryQueues = new Map();
+
 // Helper to safely parse Gemini JSON
 const parseGeminiJSON = (content) => {
   content = content.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -18,7 +21,7 @@ const parseGeminiJSON = (content) => {
 };
 
 /**
- * Add a comment to Redis queue
+ * Add a comment to Redis queue (or in-memory fallback)
  * Queue key format: "queue:threadId"
  * Each entry: { commentIndex, text, timestamp }
  */
@@ -32,18 +35,34 @@ export const addToQueue = async (threadId, commentIndex, commentText) => {
       timestamp: Date.now()
     });
 
-    // Push to queue
-    await redisClient.rPush(queueKey, entry);
-    
-    // Set expiry on queue key (48 hours to be safe)
-    await redisClient.expire(queueKey, 48 * 60 * 60);
+    if (isRedisEnabled && redis) {
+      // Push to Redis queue
+      await redis.rpush(queueKey, entry);
+      await redis.expire(queueKey, 48 * 60 * 60); // 48 hours expiry
+    } else {
+      // Fallback: in-memory storage
+      if (!inMemoryQueues.has(queueKey)) {
+        inMemoryQueues.set(queueKey, []);
+      }
+      inMemoryQueues.get(queueKey).push(entry);
+    }
 
     console.log(`📨 Added comment ${commentIndex} to queue for thread ${threadId}`);
     
     return { queued: true, queueSize: await getQueueSize(threadId) };
   } catch (err) {
-    console.error('❌ Error adding to queue:', err);
-    throw err;
+    console.error('❌ Error adding to queue:', err.message);
+    // Still try in-memory as fallback
+    const queueKey = `queue:${threadId}`;
+    if (!inMemoryQueues.has(queueKey)) {
+      inMemoryQueues.set(queueKey, []);
+    }
+    inMemoryQueues.get(queueKey).push(JSON.stringify({
+      commentIndex,
+      text: commentText,
+      timestamp: Date.now()
+    }));
+    return { queued: true, queueSize: await getQueueSize(threadId) };
   }
 };
 
@@ -53,11 +72,15 @@ export const addToQueue = async (threadId, commentIndex, commentText) => {
 export const getQueueSize = async (threadId) => {
   try {
     const queueKey = `queue:${threadId}`;
-    const size = await redisClient.lLen(queueKey);
-    return size;
+    
+    if (isRedisEnabled && redis) {
+      return await redis.llen(queueKey);
+    } else {
+      return inMemoryQueues.get(queueKey)?.length || 0;
+    }
   } catch (err) {
-    console.error('❌ Error getting queue size:', err);
-    return 0;
+    console.error('❌ Error getting queue size:', err.message);
+    return inMemoryQueues.get(`queue:${threadId}`)?.length || 0;
   }
 };
 
@@ -68,7 +91,7 @@ export const getQueueSize = async (threadId) => {
 export const shouldTriggerBatch = async (threadId) => {
   try {
     const queueKey = `queue:${threadId}`;
-    const size = await redisClient.lLen(queueKey);
+    const size = await getQueueSize(threadId);
 
     // Check size threshold
     if (size >= BATCH_SIZE) {
@@ -78,7 +101,15 @@ export const shouldTriggerBatch = async (threadId) => {
 
     // Check timeout threshold
     if (size > 0) {
-      const oldestEntry = await redisClient.lIndex(queueKey, 0);
+      let oldestEntry;
+      
+      if (isRedisEnabled && redis) {
+        oldestEntry = await redis.lindex(queueKey, 0);
+      } else {
+        const queue = inMemoryQueues.get(queueKey);
+        oldestEntry = queue && queue[0] ? queue[0] : null;
+      }
+      
       if (oldestEntry) {
         const { timestamp } = JSON.parse(oldestEntry);
         const age = Date.now() - timestamp;
@@ -92,7 +123,7 @@ export const shouldTriggerBatch = async (threadId) => {
 
     return false;
   } catch (err) {
-    console.error('❌ Error checking batch trigger:', err);
+    console.error('❌ Error checking batch trigger:', err.message);
     return false;
   }
 };
@@ -109,12 +140,17 @@ export const processBatch = async (threadId) => {
 
     if (!thread) {
       console.error(`❌ Thread ${threadId} not found, clearing queue`);
-      await redisClient.del(queueKey);
+      await clearQueue(queueKey);
       return;
     }
 
     // Get all items from queue
-    const queueItems = await redisClient.lRange(queueKey, 0, -1);
+    let queueItems = [];
+    if (isRedisEnabled && redis) {
+      queueItems = await redis.lrange(queueKey, 0, -1);
+    } else {
+      queueItems = inMemoryQueues.get(queueKey) || [];
+    }
 
     if (queueItems.length === 0) {
       console.log(`✅ Queue empty for thread ${threadId}, nothing to process`);
@@ -122,7 +158,7 @@ export const processBatch = async (threadId) => {
     }
 
     // Parse queue items
-    const comments = queueItems.map(item => JSON.parse(item));
+    const comments = queueItems.map(item => typeof item === 'string' ? JSON.parse(item) : item);
 
     // Build Gemini request with all comments
     let commentsList = '';
@@ -160,7 +196,7 @@ Return ONLY this exact JSON format (no markdown, no backticks):
         messages: [{ role: 'user', content: batchPrompt }]
       });
     } catch (geminiErr) {
-      console.error('❌ Gemini API error during batch analysis:', geminiErr);
+      console.error('❌ Gemini API error during batch analysis:', geminiErr.message);
       // Don't clear queue on error, try again later
       return;
     }
@@ -170,10 +206,10 @@ Return ONLY this exact JSON format (no markdown, no backticks):
     try {
       analysisResults = parseGeminiJSON(analysisResponse.choices[0].message.content);
     } catch (parseErr) {
-      console.error('❌ Failed to parse Gemini response:', parseErr);
+      console.error('❌ Failed to parse Gemini response:', parseErr.message);
       console.error('Response was:', analysisResponse.choices[0].message.content);
       // Clear queue on parse error to prevent infinite loop
-      await redisClient.del(queueKey);
+      await clearQueue(queueKey);
       return;
     }
 
@@ -198,19 +234,30 @@ Return ONLY this exact JSON format (no markdown, no backticks):
       }
     });
 
-    // Do NOT mutate the stored comment order here. Frontend will display
-    // a relevance-sorted view for users while keeping the DB order stable
-    // so comment indices remain valid for analysis lookups.
-
     // Save thread
     await thread.save();
 
     // Clear queue
-    await redisClient.del(queueKey);
+    await clearQueue(queueKey);
 
     console.log(`✅ Batch processed for thread ${threadId} (${comments.length} comments analyzed)`);
   } catch (err) {
-    console.error('❌ Error processing batch:', err);
+    console.error('❌ Error processing batch:', err.message);
+  }
+};
+
+/**
+ * Clear queue from Redis or in-memory
+ */
+export const clearQueue = async (queueKey) => {
+  try {
+    if (isRedisEnabled && redis) {
+      await redis.del(queueKey);
+    } else {
+      inMemoryQueues.delete(queueKey);
+    }
+  } catch (err) {
+    console.error('❌ Error clearing queue:', err.message);
   }
 };
 
@@ -219,12 +266,18 @@ Return ONLY this exact JSON format (no markdown, no backticks):
  * Checks all active queues every 10 seconds
  */
 export const startBatchProcessor = () => {
-  console.log('🚀 Starting Redis batch processor...');
+  console.log('🚀 Starting batch processor...');
 
   const intervalId = setInterval(async () => {
     try {
       // Get all queue keys
-      const keys = await redisClient.keys('queue:*');
+      let keys = [];
+      
+      if (isRedisEnabled && redis) {
+        keys = await redis.keys('queue:*');
+      } else {
+        keys = Array.from(inMemoryQueues.keys());
+      }
 
       for (const key of keys) {
         const threadId = key.replace('queue:', '');
@@ -237,7 +290,7 @@ export const startBatchProcessor = () => {
         }
       }
     } catch (err) {
-      console.error('❌ Error in batch processor loop:', err);
+      console.error('❌ Error in batch processor loop:', err.message);
     }
   }, 10000); // Check every 10 seconds
 
@@ -259,7 +312,13 @@ export const stopBatchProcessor = (intervalId) => {
  */
 export const flushAllQueues = async () => {
   try {
-    const keys = await redisClient.keys('queue:*');
+    let keys = [];
+    
+    if (isRedisEnabled && redis) {
+      keys = await redis.keys('queue:*');
+    } else {
+      keys = Array.from(inMemoryQueues.keys());
+    }
     
     for (const key of keys) {
       const threadId = key.replace('queue:', '');
@@ -272,6 +331,6 @@ export const flushAllQueues = async () => {
     
     console.log('✅ All queues flushed');
   } catch (err) {
-    console.error('❌ Error flushing queues:', err);
+    console.error('❌ Error flushing queues:', err.message);
   }
 };

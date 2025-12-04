@@ -1,31 +1,23 @@
-import redis from 'redis';
+import { Redis } from "@upstash/redis";
 
-// Support either a single REDIS_URL (e.g. Upstash) or host/port/password env vars
-let redisClient;
-if (process.env.REDIS_URL) {
-  redisClient = redis.createClient({ url: process.env.REDIS_URL });
+let redis = null;
+let isRedisEnabled = false;
+
+// Use REST API for serverless environments (Upstash recommended)
+if (process.env.REDIS_REST_URL && process.env.REDIS_REST_TOKEN) {
+  try {
+    redis = new Redis({
+      url: process.env.REDIS_REST_URL,
+      token: process.env.REDIS_REST_TOKEN,
+    });
+    isRedisEnabled = true;
+    console.log('✅ Redis (Upstash REST) configured');
+  } catch (err) {
+    console.warn('⚠️ Redis configuration failed:', err.message);
+    isRedisEnabled = false;
+  }
 } else {
-  redisClient = redis.createClient({
-    socket: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379
-    },
-    password: process.env.REDIS_PASSWORD || undefined,
-    database: 0
-  });
+  console.log('ℹ️ Redis not configured (REDIS_REST_URL or REDIS_REST_TOKEN missing)');
 }
 
-// Handle connection events
-redisClient.on('connect', () => {
-  console.log('✅ Redis connected');
-});
-
-redisClient.on('error', (err) => {
-  console.error('❌ Redis connection error:', err.message);
-});
-
-redisClient.on('disconnect', () => {
-  console.log('⚠️ Redis disconnected');
-});
-
-export default redisClient;
+export { redis, isRedisEnabled };

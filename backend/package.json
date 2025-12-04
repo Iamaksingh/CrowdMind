@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@upstash/redis": "^1.35.0",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",
@@ -25,8 +26,7 @@
     "mongoose": "^8.17.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "openai": "^5.12.2",
-    "redis": "^4.7.1"
+    "openai": "^5.12.2"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",

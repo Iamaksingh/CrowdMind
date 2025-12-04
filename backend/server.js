@@ -5,7 +5,7 @@ import connectDB from './config/db.js';
 import threadRoutes from './routes/threadRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
-import redisClient from './config/redis.js';
+import { isRedisEnabled } from './config/redis.js';
 import { startBatchProcessor, stopBatchProcessor, flushAllQueues } from './utils/commentQueueService.js';
 
 dotenv.config();
@@ -41,17 +41,18 @@ const start = async () => {
     await connectDB(process.env.MONGO_URI);
     console.log('✅ MongoDB connected');
 
-    // Connect to Redis
-    await redisClient.connect();
-    console.log('✅ Redis connected');
-
-    // Start batch processor
-    batchProcessorInterval = startBatchProcessor();
+    // Start batch processor (Redis optional)
+    if (isRedisEnabled) {
+      batchProcessorInterval = startBatchProcessor();
+      console.log('✅ Comment batch processor started');
+    } else {
+      console.log('ℹ️ Redis disabled, comment queue will use in-memory storage');
+    }
 
     // Start server
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   } catch (err) {
-    console.error('Failed to start server', err);
+    console.error('❌ Failed to start server:', err);
     process.exit(1);
   }
 };
@@ -67,10 +68,7 @@ process.on('SIGINT', async () => {
     // Stop batch processor
     stopBatchProcessor(batchProcessorInterval);
     
-    // Close Redis connection
-    await redisClient.quit();
-    console.log('✅ Redis connection closed');
-    
+    console.log('✅ Server shutdown complete');
     process.exit(0);
   } catch (err) {
     console.error('Error during shutdown:', err);
