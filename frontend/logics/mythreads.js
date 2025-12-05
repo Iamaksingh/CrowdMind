@@ -181,12 +181,8 @@ function loadThreads(threadData) {
     const threadList = document.getElementById("thread-list");
     threadList.innerHTML = "";
 
-    // Mark liked threads
-    const likedThreadIds = threadData.filter(t => t.likedByCurrentUser).map(t => t._id);
-
     threadData.forEach(thread => {
-        const liked = likedThreadIds.includes(thread._id);
-        threadList.appendChild(createThreadElement(thread, liked));
+        threadList.appendChild(createThreadElement(thread, thread.likedByCurrentUser));
     });
 }
 
