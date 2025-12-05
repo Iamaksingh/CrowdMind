@@ -23,12 +23,12 @@ export const signup = async (req, res) => {
 
 		// Auto-create profile with default username based on email
 		const defaultUsername = email.split('@')[0] + '_' + Math.random().toString(36).substring(7);
-
+		const avatarUrl = `https://res.cloudinary.com/dce2siuae/image/upload/v1764752850/crowdmind_threads/jpbt3y1xo9dtpzknfg70.jpg`;
 		try {
 			await Profile.create({
 				user: user._id,
 				username: defaultUsername,
-				avatar: '',
+				avatar: avatarUrl,
 				bio: '',
 				location: '',
 				website: '',
