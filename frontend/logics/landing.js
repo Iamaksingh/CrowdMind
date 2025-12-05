@@ -7,6 +7,9 @@ if (!token || token === "0") {
 const BaseURL="https://crowdmind-backend.onrender.com/api"
 // const BaseURL="http://localhost:5000/api"
 // Fetch threads from backend
+
+
+
 async function fetchThreads() {
     try {
         const res = await fetch(`${BaseURL}/threads`, {
@@ -26,6 +29,8 @@ async function fetchThreads() {
         console.error("Error fetching threads:", error);
     }
 }
+
+
 
 // Create individual thread element
 function createThreadElement(thread) {
@@ -93,6 +98,8 @@ function createThreadElement(thread) {
     return threadDiv;
 }
 
+
+
 // Load threads into container
 function loadThreads(threadData) {
     const threadList = document.getElementById("thread-list");
@@ -102,6 +109,8 @@ function loadThreads(threadData) {
     });
 }
 
+
+
 // Optional: Infinite scroll
 function checkScroll() {
     const threadList = document.getElementById("thread-list");
@@ -110,7 +119,11 @@ function checkScroll() {
     }
 }
 
+
+
 document.getElementById("thread-list").addEventListener("scroll", checkScroll);
+
+
 
 // Initial load
 fetchThreads();

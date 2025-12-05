@@ -8,8 +8,12 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+
+
 const BaseURL = "https://crowdmind-backend.onrender.com/api";
 // const BaseURL="http://localhost:5000/api"
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const threadTitle = document.getElementById("thread-title");
@@ -35,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Store active analysis polls to avoid duplicates
     const activePolls = new Map();
+
+
 
     // Poll for comment analysis results
     function pollCommentAnalysis(commentIndex, maxRetries = 20) {
@@ -81,6 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000); // Poll every 1 second
     }
 
+
+
+
     // Display analysis badges on comment
     function displayCommentAnalysisBadges(commentIndex, analysis) {
         // Find comment element by its original index attribute so display order
@@ -101,8 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Relevance badge
         if (analysis.relevance_score !== null && analysis.relevance_score !== undefined) {
-            const relevanceClass = analysis.relevance_score >= 70 ? 'high' : 
-                                 analysis.relevance_score >= 40 ? 'medium' : 'low';
+            const relevanceClass = analysis.relevance_score >= 70 ? 'high' :
+                analysis.relevance_score >= 40 ? 'medium' : 'low';
             badgesHTML += `<span class="badge badge-relevance badge-${relevanceClass}" title="Relevance to thread: ${analysis.relevance_score}%">
                 ⚡ ${analysis.relevance_score}% Relevant
             </span>`;
@@ -112,12 +121,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (analysis) {
             if (analysis.has_factual_claims) {
                 const factClass = analysis.factual_accuracy === 'verified' ? 'verified' :
-                                analysis.factual_accuracy === 'disputed' ? 'disputed' : 'unverifiable';
+                    analysis.factual_accuracy === 'disputed' ? 'disputed' : 'unverifiable';
                 const factIcon = analysis.factual_accuracy === 'verified' ? '✓' :
-                               analysis.factual_accuracy === 'disputed' ? '⚠️' : '❓';
+                    analysis.factual_accuracy === 'disputed' ? '⚠️' : '❓';
                 badgesHTML += `<span class="badge badge-factcheck badge-${factClass}" title="Fact-check: ${analysis.factual_accuracy}">
-                    ${factIcon} ${analysis.factual_accuracy === 'verified' ? 'Verified' : 
-                               analysis.factual_accuracy === 'disputed' ? 'Disputed' : 'Unverifiable'}
+                    ${factIcon} ${analysis.factual_accuracy === 'verified' ? 'Verified' :
+                        analysis.factual_accuracy === 'disputed' ? 'Disputed' : 'Unverifiable'}
                 </span>`;
             } else {
                 // No factual claims detected — show opinion badge
@@ -131,6 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
             badgesContainer.innerHTML = badgesHTML;
         }
     }
+
+
 
     // Fetch thread details
     function loadThread() {
@@ -160,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.filePath) {
                     threadImage.src = data.filePath;
                     // Handle broken image URLs (old local paths)
-                    threadImage.onerror = function() {
+                    threadImage.onerror = function () {
                         console.warn("Image failed to load:", data.filePath);
                         this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23e0e0e0" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="20" fill="%23999"%3EImage unavailable%3C/text%3E%3C/svg%3E';
                     };
@@ -175,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("Error loading thread details");
             });
     }
+
+
 
     // Render comments. Do not mutate DB order — display a relevance-sorted copy
     // while preserving original indices for polling and analysis lookups.
@@ -231,6 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+
     // Post new comment
     window.addComment = function () {
         const comment = commentInput.value.trim();
@@ -260,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => {
                 const { ok, status, data, possibleSuccess } = response;
                 console.log("Comment response data:", data);
-                
+
                 // If status is 500 but comment was successful, reload anyway
                 if (status === 500 && possibleSuccess) {
                     console.warn("Got 500 error but attempting reload...");
@@ -269,17 +284,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => loadThread(), 500);
                     return;
                 }
-                
+
                 if (data.comment) {
                     // Safe → comment added directly
                     showToast("Comment added successfully");
                     commentInput.value = "";
-                    
+
                     // Update summary if returned
                     if (data.threadSummary) {
                         summaryText.textContent = data.threadSummary;
                     }
-                    
+
                     // Reload thread after a small delay to ensure DB is updated
                     setTimeout(() => {
                         loadThread();
@@ -311,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             });
 
                             console.log("Moderated comment response status:", res.status);
-                            
+
                             let data;
                             try {
                                 data = await res.json();
@@ -329,12 +344,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                 showToast("Comment posted successfully!");
                                 commentInput.value = "";
                                 moderatedCommentInput.value = "";
-                                
+
                                 // Update summary if returned
                                 if (data.threadSummary) {
                                     summaryText.textContent = data.threadSummary;
                                 }
-                                
+
                                 // Reload thread after a small delay
                                 setTimeout(() => {
                                     loadThread();
@@ -375,9 +390,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     };
 
+
+
     // Initial load
     loadThread();
 });
+
+
 
 // Toast utility
 function showToast(message, duration = 3000) {

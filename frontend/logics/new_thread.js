@@ -8,6 +8,8 @@ if (!token || token === "0") {
 const BaseURL = "https://crowdmind-backend.onrender.com/api";
 // const BaseURL="http://localhost:5000/api"
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("new-thread-form");
     const fileInput = document.getElementById("media-upload-input");
@@ -118,6 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
+
 // 🔔 Toast utility
 function showToast(message, duration = 3000) {
     const toast = document.createElement("div");
@@ -132,6 +136,8 @@ function showToast(message, duration = 3000) {
     }, duration);
 }
 
+
+
 // 📝 Reset form
 function resetForm(form, previewContainer) {
     form.reset();
@@ -139,12 +145,30 @@ function resetForm(form, previewContainer) {
     document.getElementById("file-name").textContent = "No file chosen";
 }
 
+
+
+// 📡 API call wrapper
+async function postThread(formData) {
+    const response = await fetch(`${BaseURL}/threads`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        body: formData
+    });
+    return await response.json();
+}
+
+
+
 // ⚖️ Moderation Modal
 const moderationModal = document.getElementById("moderationModal");
 const moderatedTitle = document.getElementById("moderatedTitle");
 const moderatedDescription = document.getElementById("moderatedDescription");
 const acceptBtn = document.getElementById("acceptModerated");
 const recheckBtn = document.getElementById("recheckModerated");
+
+
 
 function showModerationModal(moderatedData, originalFormData, form, loading, submitButton, previewContainer) {
     moderatedTitle.value = moderatedData.moderated_title;
@@ -186,22 +210,9 @@ function showModerationModal(moderatedData, originalFormData, form, loading, sub
         }
     };
 
-
     const exitModeratedBtn = document.getElementById("exitModerated");
     exitModeratedBtn.onclick = () => {
         moderationModal.classList.add("hidden");
         showToast("Exited moderation without posting");
     };
-}
-
-// 📡 API call wrapper
-async function postThread(formData) {
-    const response = await fetch(`${BaseURL}/threads`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${token}`
-        },
-        body: formData
-    });
-    return await response.json();
 }

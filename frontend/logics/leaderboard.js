@@ -2,6 +2,8 @@
 const BaseURL = "https://crowdmind-backend.onrender.com/api";
 // const BaseURL = "http://localhost:5000/api";
 
+
+
 const sortBySelect = document.getElementById("sortBy");
 const orderBySelect = document.getElementById("orderBy");
 const applyFiltersBtn = document.getElementById("applyFilters");
@@ -9,13 +11,19 @@ const leaderboardBody = document.getElementById("leaderboardBody");
 const loadingDiv = document.getElementById("loading");
 const errorDiv = document.getElementById("error");
 
+
+
 // Event listeners
 applyFiltersBtn.addEventListener("click", loadLeaderboard);
+
+
 
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
     loadLeaderboard();
 });
+
+
 
 async function loadLeaderboard() {
     try {
@@ -90,6 +98,8 @@ async function loadLeaderboard() {
     }
 }
 
+
+
 // Helper function to determine toxicity badge class
 function getToxicityClass(score) {
     if (score === undefined || score === null || isNaN(score)) return "low";
@@ -98,6 +108,8 @@ function getToxicityClass(score) {
     return "low";
 }
 
+
+
 // Helper function to determine bias badge class
 function getBiasClass(score) {
     if (score === undefined || score === null || isNaN(score)) return "low";
@@ -105,6 +117,8 @@ function getBiasClass(score) {
     if (score > 30) return "medium";
     return "low";
 }
+
+
 
 // Toast notification function (if not already defined globally)
 function showToast(message) {

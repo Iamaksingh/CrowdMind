@@ -4,9 +4,12 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+
 const BaseURL="https://crowdmind-backend.onrender.com/api"
 // const BaseURL="http://localhost:5000/api"
 // Fetch threads from backend
+
+
 async function fetchThreads() {
     try {
         const res = await fetch(`${BaseURL}/threads/mythreads`, {
@@ -26,6 +29,8 @@ async function fetchThreads() {
         console.error("Error fetching threads:", error);
     }
 }
+
+
 
 function createThreadElement(thread, likedByUser = false) {
     const threadDiv = document.createElement("div");
@@ -153,6 +158,8 @@ function createThreadElement(thread, likedByUser = false) {
     return threadDiv;
 }
 
+
+
 async function deleteThread(id, element) {
     showToast("Deleting thread...", "info");
     try {
@@ -168,6 +175,8 @@ async function deleteThread(id, element) {
     }
 }
 
+
+
 function loadThreads(threadData) {
     const threadList = document.getElementById("thread-list");
     threadList.innerHTML = "";
@@ -181,6 +190,8 @@ function loadThreads(threadData) {
     });
 }
 
+
+
 // Optional infinite scroll
 function checkScroll() {
     const threadList = document.getElementById("thread-list");
@@ -189,10 +200,13 @@ function checkScroll() {
     }
 }
 
-document.getElementById("thread-list").addEventListener("scroll", checkScroll);
 
+
+document.getElementById("thread-list").addEventListener("scroll", checkScroll);
 // Initial load
 fetchThreads();
+
+
 
 function showToast(message, duration = 3000) {
     const toast = document.createElement("div");

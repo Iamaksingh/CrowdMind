@@ -7,14 +7,20 @@ if (!token || token === "0") {
     window.location.href = "login.html";
 }
 
+
+
 // Profile form elements
 const form = document.getElementById('profile-form');
 const avatarInput = document.getElementById('avatar');
 const avatarPreview = document.getElementById('avatarPreview');
 
+
+
 // Loader & toast container
 const loader = document.getElementById('profile-loading');
 const toastContainer = document.getElementById('toast-container');
+
+
 
 // ----------------------------
 // Toast function
@@ -31,6 +37,8 @@ function showToast(message, duration = 3000) {
         setTimeout(() => toast.remove(), 500);
     }, duration);
 }
+
+
 
 // ----------------------------
 // 1. Fetch current profile
@@ -76,6 +84,8 @@ async function loadProfile() {
     }
 }
 
+
+
 // ----------------------------
 // 2. Clickable avatar & live preview
 // ----------------------------
@@ -89,6 +99,8 @@ avatarInput.addEventListener('change', (e) => {
         reader.readAsDataURL(file);
     }
 });
+
+
 
 // ----------------------------
 // 3. Handle form submission
@@ -121,6 +133,8 @@ form.addEventListener('submit', async (e) => {
         loader.classList.add("hidden"); // always hide loader
     }
 });
+
+
 
 // ----------------------------
 // Initialize
