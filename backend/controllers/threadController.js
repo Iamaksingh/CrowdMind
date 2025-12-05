@@ -128,26 +128,30 @@ export const createThread = async (req, res) => {
 
 
 export const getThreads = async (req, res) => {
-	try {
-		let user = null;
-		if (req.user && req.user.id) {
-			user = await User.findById(req.user.id);
-		}
+    try {
+        let likedThreadIds = new Set();
+        
+        // Only fetch user data if authenticated
+        if (req.user && req.user.id) {
+            const user = await User.findById(req.user.id).lean();
+            likedThreadIds = new Set(user.likedThreads.map(id => id.toString()));
+        }
 
-		const threads = await Thread.find()
-			.populate('author', 'username email')
-			.sort({ createdAt: -1 });
+        const threads = await Thread.find()
+            .populate('author', 'username email')
+            .sort({ createdAt: -1 })
+            .lean();  // ✅ Use .lean() for plain objects
 
-		const threadsWithLikeInfo = threads.map(thread => ({
-			...thread.toObject(),
-			likedByCurrentUser: user ? user.likedThreads.includes(thread._id) : false
-		}));
+        const threadsWithLikeInfo = threads.map(thread => ({
+            ...thread,
+            likedByCurrentUser: likedThreadIds.has(thread._id.toString())  // ✅ O(1) lookup
+        }));
 
-		res.json(threadsWithLikeInfo);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: 'Server error' });
-	}
+        res.json(threadsWithLikeInfo);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 
