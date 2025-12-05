@@ -181,23 +181,26 @@ export const getThreadById = async (req, res) => {
 
 
 export const getThreadByUser = async (req, res) => {
-	try {
-		const user = await User.findById(req.user.id);
+    try {
+        // Use Set for O(1) lookup instead of Array.includes()
+        const user = await User.findById(req.user.id).lean();
+        const likedThreadIds = new Set(user.likedThreads.map(id => id.toString()));
 
-		const threads = await Thread.find({ author: req.user.id })
-			.populate("author", "username email")
-			.sort({ createdAt: -1 });
+        const threads = await Thread.find({ author: req.user.id })
+            .populate("author", "username email")
+            .sort({ createdAt: -1 })
+            .lean();  // ✅ Return plain objects, no need for .toObject()
 
-		const threadsWithLikeInfo = threads.map(thread => ({
-			...thread.toObject(),
-			likedByCurrentUser: user.likedThreads.includes(thread._id)
-		}));
+        const threadsWithLikeInfo = threads.map(thread => ({
+            ...thread,
+            likedByCurrentUser: likedThreadIds.has(thread._id.toString())  // ✅ O(1) lookup
+        }));
 
-		res.json(threadsWithLikeInfo);
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ message: "Server error" });
-	}
+        res.json(threadsWithLikeInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
 
