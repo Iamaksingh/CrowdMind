@@ -82,6 +82,7 @@
         outline: 2px solid rgba(102,126,234,0.12);
         outline-offset: 2px;
     }
+}
 /* Medium Screens (1024px - 1199px) - Keep vertical sidebar */
 @media (max-width: 1199px) and (min-width: 1024px) {
     .sidebar {
