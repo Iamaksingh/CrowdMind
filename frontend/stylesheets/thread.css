@@ -433,11 +433,24 @@ body::before {
     .thread-container {
         grid-template-columns: 1fr;
         gap: 20px;
+        height: auto;
     }
 
-    .thread-left,
-    .thread-right {
+    .thread-left {
         overflow-y: visible !important;
+        height: auto;
+    }
+
+    .thread-right {
+        overflow: visible !important;
+        height: auto;
+    }
+
+    .comments {
+        overflow-y: visible !important;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 
     .main-content {
@@ -479,11 +492,25 @@ body::before {
     .thread-container {
         grid-template-columns: 1fr;
         gap: 15px;
+        height: auto;
     }
 
-    .thread-left,
-    .thread-right {
+    .thread-left {
         overflow-y: visible !important;
+        height: auto;
+    }
+
+    .thread-right {
+        overflow: visible !important;
+        height: auto;
+    }
+
+    .comments {
+        overflow-y: visible !important;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: none;
     }
 
     .main-content {
